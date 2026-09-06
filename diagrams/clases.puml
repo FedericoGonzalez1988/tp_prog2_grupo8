@@ -2,4 +2,102 @@
 
 title Gestion de Pedidos Restaurante
 
+abstract class Pedido {
+
+    -productosIndividuales: Item []
+    -productosCombinados: Combo[]
+    -numeroPedido: string
+    -estadoPedido: 
+
+    +agregarItem(item:Item)
+    +agregarCombo(combo:Combo)
+
+}
+
+class Salon extends Pedido{
+    -mesa: string
+    -mozo: Empleado
+}
+
+class Delivery extends Pedido{
+    -cadete: Empleado
+    -direccion: string
+    -costoEnvio: number
+}
+
+class ParaLlevar extends Pedido{
+
+    -horario: time
+
+}
+
+class Menu {
+
+    -items: Item[]
+    -combos: Combo []
+
+    +agregarItem(item: Item)
+    +agregarCombo(combo:Combo)
+    +quitarItem(item:Item)
+    +quitarCombo(combo:Combo)
+
+}
+
+class Combo {
+
+    //2 constructores, uno con items y otro con items y porcentaje de descuento
+    -porcentaje: number = PORCENTAJEFIJO
+    -items: Item[]
+    -numeroId:
+
+    +calcularPrecio()
+}
+
+class Item {
+
+-nombre: string
+-estacion: Estacion
+-estado: 
+-precio: number
+-disponible: boolean
+}
+
+
+abstract class Estacion {
+    -
+    +modificarEstadoItem()
+}
+class CocinaFria extends Estacion{
+
+}
+
+class Carnes extends Estacion{
+
+}
+class Barra extends Estacion{
+
+}
+class CocinaDulce extends Estacion{
+
+}
+
+interface enConstruccion {
+
+}
+
+abstract class Empleado {
+    - nombre: string
+    - cuil: number
+    - sector: string
+}
+
+class Mozo extends Empleado {
+    
+}
+class Cadete extends Empleado {
+    
+}
+
+Salon --> enConstruccion
+
 @enduml
