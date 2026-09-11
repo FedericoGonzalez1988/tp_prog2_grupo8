@@ -2,16 +2,17 @@ import Estado from "./estado";
 import Estacion from "./estacion";
 
 
-export default class Comida {
+export default abstract class Comida {
 
-    constructor(private nombre: string, private precio: number, private estacion: Estacion, private disponible: boolean = true, private estado: Estado ) {
+    constructor(private nombre: string, private precio: number, private disponible: boolean = true) {
         this.nombre = nombre;
         this.precio = precio;
-        this.estacion = estacion;
-        this.estado = estado;
+        this.disponible = disponible;
+
     }
 
-    
+    abstract chequearEstado(): Estado 
+
     public setPrecio(precio: number): void {
         this.precio = precio;
     }
@@ -26,19 +27,4 @@ export default class Comida {
         return this.nombre;
     }
 
-    public setEstacion(estacion: Estacion): void {
-        this.estacion = estacion;
-    }
-
-    public getEstacion(): Estacion {
-        return this.estacion;
-    }
-
-    public setDisponible(disponibilidad:boolean): void {
-        this.disponible = disponibilidad;
-    }
-
-    public getDisponible(): boolean {
-        return this.disponible;
-    }
 }
