@@ -39,11 +39,10 @@ class Menu {
 }
 abstract class Comida {
     -disponible: boolean
-    -estado: 
-    -estacion: Estacion
     -nombre: string
     -precio: number
-
+    //definir este metodo en esta clase(como se vaya a usar en Item) y se sobreescribe en Combo
+    +chequearEstado()
 
 }
 class Combo extends Comida {
@@ -53,13 +52,16 @@ class Combo extends Comida {
     -porcentaje: number = PORCENTAJEFIJO
     -items: Item[]
 
+    //sobreescribir metodo chequearEstado: en esta clase recorre el array y ve todos los estados de los items
     +agregarItem(item: Item)
     +eliminarItem(item: Item)
     +calcularPrecio()
 }
 
 class Item extends Comida{
-    
+    -estacion: Estacion
+    -estado: 
+
 }
 
 
