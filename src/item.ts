@@ -1,29 +1,22 @@
-export default class Item {
+import Comida from "./comida";
+import Estacion from "./estacion";
+import Estado from "./estado";
 
-    // hay que cambiar el tipo de variable del estado. No me acuerdo en qué quedamos.
-    constructor(private nombre: string, private estacion: Estacion, private estado: string, private precio: number, private disponible: boolean = true) {
 
-        this.nombre = nombre;
+export default class Item extends Comida{
+
+    constructor(nombre: string, precio: number, disponible: boolean, private estacion: Estacion, private estado:Estado) {
+
+        super(nombre, precio, disponible);
         this.estacion = estacion;
         this.estado = estado;
-        this.precio = precio;
 
     }
-
-    public setPrecio(precio: number): void {
-        this.precio = precio;
+        
+    chequearEstado() {
+        return this.estado;
     }
-    public getPrecio(): number {
-        return this.precio;
-    }
-
-    public setNombre(nombre: string): void {
-        this.nombre = nombre;
-    }
-    public getNombre(): string {
-        return this.nombre;
-    }
-
+    
     public setEstacion(estacion: Estacion): void {
         this.estacion = estacion;
     }
@@ -39,4 +32,6 @@ export default class Item {
     public getDisponible(): boolean {
         return this.disponible;
     }
-}
+
+    }
+

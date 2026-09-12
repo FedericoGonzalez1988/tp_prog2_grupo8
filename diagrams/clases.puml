@@ -4,13 +4,12 @@ title Gestion de Pedidos Restaurante
 
 abstract class Pedido {
 
-    -productosIndividuales: Item []
-    -productosCombinados: Combo[]
+
+    -productos: Comida[]
     -numeroPedido: string
     -estadoPedido: 
 
-    +agregarItem(item:Item)
-    +agregarCombo(combo:Combo)
+    +agregarProducto(producto: Comida)
 
 }
 
@@ -33,33 +32,36 @@ class ParaLlevar extends Pedido{
 
 class Menu {
 
-    -items: Item[]
-    -combos: Combo []
-
-    +agregarItem(item: Item)
-    +agregarCombo(combo:Combo)
-    +quitarItem(item:Item)
-    +quitarCombo(combo:Combo)
+    -items: Comida[]
+    +agregarItem(item: Comida)
+    +quitarItem(item:Comida)
 
 }
+abstract class Comida {
+    -disponible: boolean
+    -nombre: string
+    -precio: number
+    //definir este metodo en esta clase(como se vaya a usar en Item) y se sobreescribe en Combo
+    +chequearEstado()
 
-class Combo {
+}
+class Combo extends Comida {
 
-    //2 constructores, uno con items y otro con items y porcentaje de descuento
+  // se inicializa con array de items vacio 
+  // opciones: 2 constructores o un metodo que inicialice
     -porcentaje: number = PORCENTAJEFIJO
     -items: Item[]
-    -numeroId:
 
+    //sobreescribir metodo chequearEstado: en esta clase recorre el array y ve todos los estados de los items
+    +agregarItem(item: Item)
+    +eliminarItem(item: Item)
     +calcularPrecio()
 }
 
-class Item {
+class Item extends Comida{
+    -estacion: Estacion
+    -estado: 
 
--nombre: string
--estacion: Estacion
--estado: 
--precio: number
--disponible: boolean
 }
 
 
