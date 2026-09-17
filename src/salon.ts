@@ -1,5 +1,6 @@
 import Pedido from "./pedido";
 import Comida from "./comida";
+import Empleado from "./empleado";
 
 export default class Salon extends Pedido {
     private mesa: string;
