@@ -2,4 +2,106 @@
 
 title Gestion de Pedidos Restaurante
 
+abstract class Pedido {
+
+
+    -productos: Comida[]
+    -numeroPedido: string
+    -estadoPedido: 
+
+    +agregarProducto(producto: Comida)
+
+}
+
+class Salon extends Pedido{
+    -mesa: string
+    -mozo: Empleado
+}
+
+class Delivery extends Pedido{
+    -cadete: Empleado
+    -direccion: string
+    -costoEnvio: number
+}
+
+class ParaLlevar extends Pedido{
+
+    -horario: time
+
+}
+
+class Menu {
+
+    -items: Comida[]
+    +agregarItem(item: Comida)
+    +quitarItem(item:Comida)
+
+}
+abstract class Comida {
+    -disponible: boolean
+    -nombre: string
+    //definir este metodo en esta clase(como se vaya a usar en Item) y se sobreescribe en Combo
+    +chequearEstado()
+    +getPrecio()
+
+}
+class Combo extends Comida {
+
+    -idCombo:string
+    -porcentajeDescuento?:number
+    -itemsCombo:Item[]
+    +getPrecio()
+    +chequearEstado()
+
+    'definir si se pueden agregar y quitar items cuando ya se creó el combo
+    '+agregarItem(item: Item)
+    '+eliminarItem(item: Item)
+    
+}
+
+class Item extends Comida{
+    -precio: number
+    -estacion: Estacion
+    -estado: Estado
+    +chequearEstado()
+}
+
+
+abstract class Estacion {
+    -
+    +modificarEstadoItem()
+}
+class CocinaFria extends Estacion{
+
+}
+
+class Carnes extends Estacion{
+
+}
+class Barra extends Estacion{
+
+}
+class CocinaDulce extends Estacion{
+
+}
+
+interface enConstruccion {
+
+}
+
+abstract class Empleado {
+    - nombre: string
+    - cuil: number
+    - sector: string
+}
+
+class Mozo extends Empleado {
+    
+}
+class Cadete extends Empleado {
+    
+}
+
+Salon --> enConstruccion
+
 @enduml
