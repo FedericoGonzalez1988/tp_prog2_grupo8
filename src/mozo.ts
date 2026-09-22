@@ -6,7 +6,7 @@ export default class Mozo extends Empleado {
     private mesasAsignadas:Mesa[]; //Puede que no sea necesario este atributo
     private pedidoEnConstruccion: Salon;
 
-    constructor(private nombre: string, private cuil: number, private sector: string, mesasAsignadas: Mesa[]) {
+    constructor( nombre: string,  cuil: number, sector: string, mesasAsignadas: Mesa[]) {
         super(nombre, cuil, sector);
         this.mesasAsignadas=mesasAsignadas;
     }
@@ -15,6 +15,7 @@ export default class Mozo extends Empleado {
     public agregarItem(pedido:Salon, item:Comida):void {
         pedido.push(item);
     }
+    
 
     public corregirItem(pedido:Salon, item:Comida) {
         //metodo a definir cuando se elija estructura de datos
