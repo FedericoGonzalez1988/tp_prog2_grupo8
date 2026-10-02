@@ -1,6 +1,6 @@
 import Comida from "./comida";
 import Item from "./item";
-import Estado from "./estado";
+import { DESCUENTO_FIJO, DIVISOR_CIEN } from "./constants/constant";
 
 export default class Combo extends Comida {
     private idCombo:string;
@@ -8,12 +8,23 @@ export default class Combo extends Comida {
     private itemsCombo:Item[];
 
     public constructor(nombre: string, disponible: boolean, idCombo: string, itemsCombo: Item[]);
-    public constructor(nombre: string, disponible: boolean, idCombo: string, itemsCombo: Item[], porcentajeDescuento: number);
-    public constructor(nombre: string, disponible: boolean, idCombo: string, itemsCombo: Item[], porcentajeDescuento?: number) {
+    public constructor(
+        nombre: string, 
+        disponible: boolean, 
+        idCombo: string, 
+        itemsCombo: Item[], 
+        porcentajeDescuento: number);
+    public constructor(
+        nombre: string, 
+        disponible: boolean, 
+        idCombo: string, 
+        itemsCombo: Item[], 
+        porcentajeDescuento?: number) 
+        {
         super(nombre, disponible);
         this.idCombo = idCombo;
         this.itemsCombo = itemsCombo; // falta verificacion "itemsCombo.length>1" y disponibilidad items. y excepcion
-        this.porcentajeDescuento = porcentajeDescuento ?? 5;
+        this.porcentajeDescuento = porcentajeDescuento ?? DESCUENTO_FIJO;
     }
 
     public getIdCombo():string {
@@ -22,11 +33,11 @@ export default class Combo extends Comida {
 
     public getPrecio(): number {
         let precioComboSinDescuentos=0;
-        let precioCombo=0;
-        for(const item of this.itemsCombo) {
+        
+        for (const item of this.itemsCombo) {
             precioComboSinDescuentos+=item.getPrecio();
         }
-        precioCombo=precioComboSinDescuentos-(precioComboSinDescuentos*this.porcentajeDescuento/100);
+        const precioCombo=precioComboSinDescuentos-(precioComboSinDescuentos*this.porcentajeDescuento/DIVISOR_CIEN);
         return precioCombo;
     }
 

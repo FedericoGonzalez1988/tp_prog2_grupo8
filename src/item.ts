@@ -3,17 +3,20 @@ import Estacion from "./estacion";
 import Estado from "./estado";
 
 
-export default class Item extends Comida{
+export default class Item extends Comida {
 
-    constructor(nombre: string, disponible: boolean, private precio: number, private estacion: Estacion, private estado:Estado) {
+    public constructor(
+        nombre: string, 
+        disponible: boolean, 
+        private precio: number, 
+        private estacion: Estacion, 
+        private estado:Estado) {
         super(nombre, disponible);
-        this.precio = precio;
-        this.estacion = estacion;
-        this.estado = estado;
+       
     }
      
     //este metodo chequearEstado deberá ser revisado cuando definamos la clase Estado
-    chequearEstado():Estado {
+    public chequearEstado():Estado {
         return this.estado;
     }
 
