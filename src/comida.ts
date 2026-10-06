@@ -4,7 +4,7 @@ import Estacion from "./estacion";
 
 export default abstract class Comida {
 
-    constructor(private nombre: string, private disponible: boolean) {
+    public constructor(private nombre: string, private disponible: boolean) {
         this.nombre = nombre;
         this.disponible = disponible;
     }

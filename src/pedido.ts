@@ -1,3 +1,5 @@
+import Comida from "./comida";
+
 export default class Pedido {
     private productos: Comida[];
     private numeroPedido: string;
@@ -8,9 +10,10 @@ export default class Pedido {
         this.productos=productos;
     }
 
-    public agregarProducto(producto:Comida) {
-        if(producto.disponible) {
-            this.productos.push(producto);
-        } //falta excepcion por producto no disponible
+    public agregarProducto(producto:Comida):void {
+        if (!producto.getDisponible()) {
+            throw new ErrorProductoNoDisponible("El producto que quiere agregar no está disponible");
+        } 
+        this.productos.push(producto);
     }
 }

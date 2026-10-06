@@ -1,9 +1,10 @@
+import Comida from "./comida";
+import Pedido from "./pedido";
+
 export default class ParaLlevar extends Pedido {
 
-    constructor(private horario:Date){
-        //en el super faltan agregar los parametros del constructor de Pedido
-        super()
-        this.horario = horario;
+    public constructor(numeroPedido:string, productos:Comida[] = [], private horario:Date) {
+        super(numeroPedido,productos);
     }
 
 }
