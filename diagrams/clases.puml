@@ -13,18 +13,18 @@ abstract class Pedido {
 
 }
 
-class Salon extends Pedido{
+class PedidoSalon extends Pedido implements enConstruccion {
     -mesa: string
     -mozo: Empleado
 }
 
-class Delivery extends Pedido{
+class PedidoDelivery extends Pedido {
     -cadete: Empleado
     -direccion: string
     -costoEnvio: number
 }
 
-class ParaLlevar extends Pedido{
+class PedidoParaLlevar extends Pedido  implements enConstruccion {
 
     -horario: time
 
@@ -102,6 +102,6 @@ class Cadete extends Empleado {
     
 }
 
-Salon --> enConstruccion
+' Salon --> enConstruccion
 
 @enduml
