@@ -1,4 +1,6 @@
 import Comida from "./comida";
+import ErrorComidaNoDisponible from "./error/errorComidaNoDisponible"
+
 
 export default class Pedido {
     private productos: Comida[];
@@ -12,7 +14,7 @@ export default class Pedido {
 
     public agregarProducto(producto:Comida):void {
         if (!producto.getDisponible()) {
-            throw new ErrorProductoNoDisponible("El producto que quiere agregar no está disponible");
+            throw new ErrorComidaNoDisponible("El producto que quiere agregar no está disponible");
         } 
         this.productos.push(producto);
     }
