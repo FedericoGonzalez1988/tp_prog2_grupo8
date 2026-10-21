@@ -14,7 +14,7 @@ abstract class Pedido {
 
 }
 
-class PedidoSalon extends Pedido implements pedidoModificable {
+class PedidoSalon extends Pedido implements IPedidoModificable {
     -mesa: string
     -mozo: Empleado
 }
@@ -25,7 +25,7 @@ class PedidoDelivery extends Pedido {
     -costoEnvio: number
 }
 
-class PedidoParaLlevar extends Pedido  implements pedidoModificable {
+class PedidoParaLlevar extends Pedido  implements IPedidoModificable {
 
     -horario: time
 
@@ -91,9 +91,11 @@ class CocinaDulce extends Estacion{
 
 }
 
-interface pedidoModificable {
-    +quitarItem(item: Comida)
+interface IPedidoModificable {
+    + deshacerUltimoItem(): Comida | null;
+    + quitarHastaItem(item: Comida): void;
 }
+
 
 class Empleado {
     - nombre: string
