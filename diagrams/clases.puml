@@ -9,7 +9,7 @@ abstract class Pedido {
     -numeroPedido: string
     //decidiendo si este estado va o no
     -estadoPedido: 
-
+    
     +agregarProducto(producto: Comida)
 
 }
@@ -27,7 +27,7 @@ class PedidoDelivery extends Pedido {
 
 class PedidoParaLlevar extends Pedido  implements IPedidoModificable {
 
-    -horario: time
+    -horarioRetiro: time
 
 }
 
@@ -92,10 +92,8 @@ class CocinaDulce extends Estacion{
 }
 
 interface IPedidoModificable {
-    + deshacerUltimoItem(): Comida | null;
-    + quitarHastaItem(item: Comida): void;
+    +quitarItem(item: Comida)
 }
-
 
 class Empleado {
     - nombre: string
