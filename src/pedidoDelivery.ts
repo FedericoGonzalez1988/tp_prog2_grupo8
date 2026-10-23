@@ -2,7 +2,7 @@ import Pedido from "./pedido";
 import Comida from "./comida";
 import Empleado from "./empleado";
 
-export default class Delivery extends Pedido {
+export default class PedidoDelivery extends Pedido {
     private cadete: Empleado;
     private direccion: string;
     private costoEnvio: number;
