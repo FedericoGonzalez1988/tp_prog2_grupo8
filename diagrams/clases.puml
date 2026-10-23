@@ -97,7 +97,7 @@ interface IPedidoModificable {
 
 class Empleado {
     - nombre: string
-    - cuil: number
+    - cuil: string
     - sector: string
 }
 
