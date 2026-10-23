@@ -2,7 +2,7 @@ import Pedido from "./pedido";
 import Comida from "./comida";
 import Mozo from "./mozo";
 
-export default class Salon extends Pedido {
+export default class PedidoSalon extends Pedido {
     private mesa: string;
     private mozo: Mozo;
 

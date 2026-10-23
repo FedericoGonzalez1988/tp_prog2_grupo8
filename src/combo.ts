@@ -1,31 +1,36 @@
 import Comida from "./comida";
 import Item from "./item";
-import { DESCUENTO_FIJO, DIVISOR_CIEN } from "./constants/constant";
+import { DIVISOR_CIEN, NRO_CERO, NRO_DOS } from "./constants/constant";
+import IEstrategiaPrecioCombo from "./iEstrategiaPrecioCombo";
+import ErrorItemsInsuficientesParaCombo from "./error/errorItemsInsuficientesParaCombo";
+import ErrorItemsNoDisponiblesEnCombo from "./error/errorItemsNoDisponiblesEnCombo";
 
 export default class Combo extends Comida {
     private idCombo:string;
-    private porcentajeDescuento:number;
     private itemsCombo:Item[];
+    private estrategiaCalculo:IEstrategiaPrecioCombo;
 
-    public constructor(nombre: string, disponible: boolean, idCombo: string, itemsCombo: Item[]);
     public constructor(
         nombre: string, 
         disponible: boolean, 
         idCombo: string, 
         itemsCombo: Item[], 
-        porcentajeDescuento: number);
-    public constructor(
-        nombre: string, 
-        disponible: boolean, 
-        idCombo: string, 
-        itemsCombo: Item[], 
-        porcentajeDescuento?: number) 
-        {
-        super(nombre, disponible);
-        this.idCombo = idCombo;
-        this.itemsCombo = itemsCombo; // falta verificacion "itemsCombo.length>1" y disponibilidad items. y excepcion
-        this.porcentajeDescuento = porcentajeDescuento ?? DESCUENTO_FIJO;
-    }
+        estrategiaCalculo:IEstrategiaPrecioCombo) {
+    
+            super(nombre, disponible);
+
+            if (itemsCombo.length < NRO_DOS) {
+                throw new ErrorItemsInsuficientesParaCombo("El combo debe tener al menos dos productos");
+            }
+
+            const itemsNoDisponibles = itemsCombo.filter(item => !item.getDisponible());
+            if (itemsNoDisponibles.length > NRO_CERO) {
+                throw new ErrorItemsNoDisponiblesEnCombo("Un combo no puede tener items que no esten disponibles");
+            }
+            this.idCombo = idCombo;
+            this.itemsCombo = itemsCombo; 
+            this.estrategiaCalculo=estrategiaCalculo;        
+        }
 
     public getIdCombo():string {
         return this.idCombo;
@@ -37,8 +42,8 @@ export default class Combo extends Comida {
         for (const item of this.itemsCombo) {
             precioComboSinDescuentos+=item.getPrecio();
         }
-        const precioCombo=precioComboSinDescuentos-(precioComboSinDescuentos*this.porcentajeDescuento/DIVISOR_CIEN);
-        return precioCombo;
+        
+        return this.estrategiaCalculo.calcularPrecio(precioComboSinDescuentos);;
     }
 
     //este metodo chequearEstado deberá ser revisado cuando definamos la clase Estado
