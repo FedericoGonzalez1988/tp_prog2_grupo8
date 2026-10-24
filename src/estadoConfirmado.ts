@@ -1,0 +1,1 @@
+export default class EstadoConfirmado implements IEstadoPedido {}
