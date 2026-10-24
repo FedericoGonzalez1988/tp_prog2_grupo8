@@ -28,7 +28,7 @@ export default abstract class Estacion {
             
             if (itemActual) {
                 // La estación dispara la acción, el ítem y su estado resuelven cómo hacerlo
-                itemActual.avanzarSiguienteEstado();
+                itemActual.avanzarEstado();
             }
         }
     }
