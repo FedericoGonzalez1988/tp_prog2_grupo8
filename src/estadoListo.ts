@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/class-methods-use-this */
 
+import ErrorPedidoYaListo from "./error/errorPedidoYaListo";
 import IEstadoPedido from "./iEstadoPedido";
 
 export default class EstadoListo implements IEstadoPedido {
