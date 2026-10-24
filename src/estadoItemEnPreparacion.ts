@@ -4,7 +4,6 @@
 import ErrorItemNoModificable from "./error/errorItemNoModificable";
 import EstadoItemListo from "./estadoItemListo";
 import IEstadoItem from "./iEstadoItem"
-import Item from "./item";
 
 export default class EstadoItemEnPreparacion implements IEstadoItem {
     public siguienteEstado(): IEstadoItem {
