@@ -2,21 +2,23 @@
 
 title Gestion de Pedidos Restaurante
 
+set separator none
+
+' ===================== Pedidos =====================
+
 abstract class Pedido {
-
-
-    -productos: Comida[]
     -numeroPedido: string
-    //decidiendo si este estado va o no
-    -estadoPedido: 
-    
-    +agregarProducto(producto: Comida)
-
+    -productos: Comida[]
+    +agregarProducto(producto: Comida): void
 }
 
 class PedidoSalon extends Pedido implements IPedidoModificable {
     -mesa: string
     -mozo: Empleado
+}
+
+class PedidoParaLlevar extends Pedido implements IPedidoModificable {
+    -horario: Date
 }
 
 class PedidoDelivery extends Pedido {
@@ -25,85 +27,163 @@ class PedidoDelivery extends Pedido {
     -costoEnvio: number
 }
 
-class PedidoParaLlevar extends Pedido  implements IPedidoModificable {
-
-    -horarioRetiro: time
-
-}
-
-class Menu {
-
-    -items: Comida[]
-    +agregarItem(item: Comida)
-    +quitarItem(item:Comida)
-
-}
-abstract class Comida {
-    -disponible: boolean
-    -nombre: string
-    -estado: IEstado
-    //definir este metodo en esta clase(como se vaya a usar en Item) y se sobreescribe en Combo
-    +chequearEstado()
-    +getPrecio()
-
-}
-class Combo extends Comida {
-
-    -idCombo:string
-    -porcentajeDescuento?:number
-    -itemsCombo:Item[]
-    +getPrecio()
-    +chequearEstado()
-
-    'definir si se pueden agregar y quitar items cuando ya se creó el combo
-    '+agregarItem(item: Item)
-    '+eliminarItem(item: Item)
-    
-}
-
-class Item extends Comida{
-    -precio: number
-    -estacion: Estacion
-    -estado: Estado
-    +chequearEstado()
-}
-
-abstract class IEstado {
-
-    // En esta clase implementamos patron State para manejar cambios de estado
-}
-
-abstract class Estacion {
-    -
-    +modificarEstadoItem()
-}
-class CocinaFria extends Estacion{
-
-}
-
-class Carnes extends Estacion{
-
-}
-class Barra extends Estacion{
-
-}
-class CocinaDulce extends Estacion{
-
-}
-
 interface IPedidoModificable {
-    +quitarItem(item: Comida)
+    +deshacerUltimoItem(): Comida | null
+    +quitarHastaItem(item: Comida): void
 }
+
+' ===================== Empleados =====================
 
 class Empleado {
-    - nombre: string
-    - cuil: string
-    - sector: string
+    -nombre: string
+    -cuil: string
+    -sector: string
+    +getNombre(): string
+    +getCuil(): string
+    +getSector(): string
+    +agregarItem(pedido: Pedido, item: Comida): void
+    +corregirItem(pedido: IPedidoModificable, item: Comida): void
 }
 
+' ===================== Menu y productos =====================
 
-Comida *-- IEstado
-PedidoDelivery *-- Empleado
-PedidoSalon *-- Empleado
+class Menu {
+    -items: Comida[]
+    +agregarItem(item: Comida): void
+    +quitarItem(item: Comida): void
+    +getItems(): Comida[]
+}
+
+abstract class Comida {
+    -nombre: string
+    -disponible: boolean
+    +{abstract} getPrecio(): number
+    +{abstract} estaListo(): boolean
+    +getNombre(): string
+    +setNombre(nombre: string): void
+    +getDisponible(): boolean
+    +setDisponible(disponibilidad: boolean): void
+}
+
+class Item extends Comida {
+    -precio: number
+    -estacion: Estacion
+    -estado: IEstadoItem
+    +avanzarEstado(): void
+    +estaListo(): boolean
+    +getPrecio(): number
+    +setPrecio(precio: number): void
+    +getEstacion(): Estacion
+    +setEstacion(estacion: Estacion): void
+}
+
+class Combo extends Comida {
+    -idCombo: string
+    -itemsCombo: Item[]
+    -estrategiaCalculo: IEstrategiaPrecioCombo
+    +getIdCombo(): string
+    +getPrecio(): number
+    +estaListo(): boolean
+}
+
+' ===================== Precio de combos (patron Strategy) =====================
+
+interface IEstrategiaPrecioCombo {
+    +calcularPrecio(precioOriginal: number): number
+}
+
+class EstrategiaComboPorcentaje implements IEstrategiaPrecioCombo {
+    -porcentaje: number
+    +calcularPrecio(precioOriginal: number): number
+}
+
+class EstrategiaComboPrecioFijo implements IEstrategiaPrecioCombo {
+    -precioFijo: number
+    +calcularPrecio(precioOriginal: number): number
+}
+
+' ===================== Estados del item (patron State) =====================
+
+interface IEstadoItem {
+    +siguienteEstado(): IEstadoItem
+    +validarModificacion(): void
+    +getNombre(): string
+    +estaListo(): boolean
+}
+
+class EstadoItemPendiente implements IEstadoItem
+class EstadoItemEnPreparacion implements IEstadoItem
+class EstadoItemListo implements IEstadoItem
+
+' ===================== Estaciones =====================
+
+abstract class Estacion {
+    -nombreEstacion: string
+    -itemsEstacion: Cola<Item>
+    +getNombreEstacion(): string
+    +setNombreEstacion(nombreEstacion: string): void
+    +recibirItem(item: Item): void
+    +procesarSiguiente(): void
+}
+
+class Parrilla extends Estacion
+class CocinaFria extends Estacion
+class Barra extends Estacion
+class CocinaDulce extends Estacion
+
+' ===================== Estructuras de datos =====================
+
+class Cola<T> {
+    -first: MyNode<T>
+    -last: MyNode<T>
+    +encolar(value: T): void
+    +desencolar(): T | undefined
+    +estaVacia(): boolean
+}
+
+class MyNode<T> {
+    -_value: T
+    -_next: MyNode<T>
+    +get value(): T
+    +get next(): MyNode<T>
+    +set next(nodo: MyNode<T>)
+}
+
+' ===================== Errores =====================
+
+class Error
+
+package error {
+    class ErrorComidaNoDisponible
+    class ErrorItemNoModificable
+    class ErrorItemsInsuficientesParaCombo
+    class ErrorItemsNoDisponiblesEnCombo
+    class ErrorPrecioFijoComboIncorrecto
+}
+
+Error <|-- ErrorComidaNoDisponible
+Error <|-- ErrorItemNoModificable
+Error <|-- ErrorItemsInsuficientesParaCombo
+Error <|-- ErrorItemsNoDisponiblesEnCombo
+Error <|-- ErrorPrecioFijoComboIncorrecto
+
+' ===================== Relaciones =====================
+
+Pedido o-- Comida
+Menu o-- Comida
+Combo o-- Item
+Combo --> IEstrategiaPrecioCombo
+Item *-- IEstadoItem
+Item --> Estacion
+Estacion *-- Cola
+Cola *-- MyNode
+PedidoSalon --> Empleado
+PedidoDelivery --> Empleado
+
+Empleado ..> Pedido
+Empleado ..> IPedidoModificable
+
+EstadoItemPendiente ..> EstadoItemEnPreparacion
+EstadoItemEnPreparacion ..> EstadoItemListo
 
 @enduml
