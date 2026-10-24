@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/class-methods-use-this */
 
+import ErrorPedidoYaConfirmado from "./error/errorPedidoYaConfirmado";
 import EstadoListo from "./estadoListo";
 import IEstadoPedido from "./iEstadoPedido";
 
