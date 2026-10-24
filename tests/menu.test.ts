@@ -58,6 +58,6 @@ describe("Menu", () => {
     menu.quitarItem(milanesa);
     expect(milanesa.getPrecio).not.toHaveBeenCalled();
     expect(milanesa.getDisponible).not.toHaveBeenCalled();
-    expect(milanesa.chequearEstado).not.toHaveBeenCalled();
+    expect(milanesa.estaListo).not.toHaveBeenCalled();
   });
 });
