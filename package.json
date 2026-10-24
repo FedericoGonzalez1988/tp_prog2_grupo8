@@ -2,9 +2,9 @@
   "name": "cuvl_programacion2",
   "version": "1.0.0",
   "description": "cuvl_programacion2",
-  "main": "dist/app.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "npm run lint && tsc",
+    "build": "npm run lint && tsc -p tsconfig.build.json",
     "clean": "npm run clean:build && npm run clean:temp",
     "clean:build": "npx rimraf ./dist",
     "clean:temp": "npx rimraf ./tmp",
