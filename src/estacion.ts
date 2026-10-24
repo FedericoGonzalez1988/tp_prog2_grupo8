@@ -27,8 +27,7 @@ export default abstract class Estacion {
             const itemActual = this.itemsEstacion.desencolar();
             
             if (itemActual) {
-                // La estación dispara la acción, el ítem y su estado resuelven cómo hacerlo
-                itemActual.avanzarSiguienteEstado();
+                itemActual.avanzarEstado();
             }
         }
     }
