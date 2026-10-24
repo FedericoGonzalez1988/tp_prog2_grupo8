@@ -1,6 +1,6 @@
 import Comida from "./comida";
 import Item from "./item";
-import { DIVISOR_CIEN, NRO_CERO, NRO_DOS } from "./constants/constant";
+import { NRO_CERO, NRO_DOS } from "./constants/constant";
 import IEstrategiaPrecioCombo from "./iEstrategiaPrecioCombo";
 import ErrorItemsInsuficientesParaCombo from "./error/errorItemsInsuficientesParaCombo";
 import ErrorItemsNoDisponiblesEnCombo from "./error/errorItemsNoDisponiblesEnCombo";
@@ -46,14 +46,8 @@ export default class Combo extends Comida {
         return this.estrategiaCalculo.calcularPrecio(precioComboSinDescuentos);;
     }
 
-    //este metodo chequearEstado deberá ser revisado cuando definamos la clase Estado
-    public chequearEstado(): Estado {
-        for (const item of this.itemsCombo) {
-            const estadoItem = item.chequearEstado();
-            if (estadoItem !== "Listo") {
-                return estadoItem; 
-            }
-        }
-        return "Listo";      
+   
+    public estaListo(): boolean {
+        return this.itemsCombo.every(elemento => elemento.estaListo());
     }
 }

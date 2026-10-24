@@ -1,17 +1,14 @@
-import Estado from "./estado";
-import Estacion from "./estacion";
-
-
 export default abstract class Comida {
 
     public constructor(private nombre: string, private disponible: boolean) {
         this.nombre = nombre;
         this.disponible = disponible;
     }
-
-    public abstract chequearEstado(): Estado 
+ 
 
     public abstract getPrecio(): number;
+
+    public abstract estaListo(): boolean;
 
     public setNombre(nombre: string): void {
         this.nombre = nombre;
