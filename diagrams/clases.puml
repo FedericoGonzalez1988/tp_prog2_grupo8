@@ -2,4 +2,188 @@
 
 title Gestion de Pedidos Restaurante
 
+set separator none
+
+' ===================== Pedidos =====================
+
+abstract class Pedido {
+    -numeroPedido: string
+    -productos: Comida[]
+    +agregarProducto(producto: Comida): void
+}
+
+class PedidoSalon extends Pedido implements IPedidoModificable {
+    -mesa: string
+    -mozo: Empleado
+}
+
+class PedidoParaLlevar extends Pedido implements IPedidoModificable {
+    -horario: Date
+}
+
+class PedidoDelivery extends Pedido {
+    -cadete: Empleado
+    -direccion: string
+    -costoEnvio: number
+}
+
+interface IPedidoModificable {
+    +deshacerUltimoItem(): Comida | null
+    +quitarHastaItem(item: Comida): void
+}
+
+' ===================== Empleados =====================
+
+class Empleado {
+    -nombre: string
+    -cuil: string
+    -sector: string
+    +getNombre(): string
+    +getCuil(): string
+    +getSector(): string
+    +agregarItem(pedido: Pedido, item: Comida): void
+    +corregirItem(pedido: IPedidoModificable, item: Comida): void
+}
+
+' ===================== Menu y productos =====================
+
+class Menu {
+    -items: Comida[]
+    +agregarItem(item: Comida): void
+    +quitarItem(item: Comida): void
+    +getItems(): Comida[]
+}
+
+abstract class Comida {
+    -nombre: string
+    -disponible: boolean
+    +{abstract} getPrecio(): number
+    +{abstract} estaListo(): boolean
+    +getNombre(): string
+    +setNombre(nombre: string): void
+    +getDisponible(): boolean
+    +setDisponible(disponibilidad: boolean): void
+}
+
+class Item extends Comida {
+    -precio: number
+    -estacion: Estacion
+    -estado: IEstadoItem
+    +avanzarEstado(): void
+    +estaListo(): boolean
+    +getPrecio(): number
+    +setPrecio(precio: number): void
+    +getEstacion(): Estacion
+    +setEstacion(estacion: Estacion): void
+}
+
+class Combo extends Comida {
+    -idCombo: string
+    -itemsCombo: Item[]
+    -estrategiaCalculo: IEstrategiaPrecioCombo
+    +getIdCombo(): string
+    +getPrecio(): number
+    +estaListo(): boolean
+}
+
+' ===================== Precio de combos (patron Strategy) =====================
+
+interface IEstrategiaPrecioCombo {
+    +calcularPrecio(precioOriginal: number): number
+}
+
+class EstrategiaComboPorcentaje implements IEstrategiaPrecioCombo {
+    -porcentaje: number
+    +calcularPrecio(precioOriginal: number): number
+}
+
+class EstrategiaComboPrecioFijo implements IEstrategiaPrecioCombo {
+    -precioFijo: number
+    +calcularPrecio(precioOriginal: number): number
+}
+
+' ===================== Estados del item (patron State) =====================
+
+interface IEstadoItem {
+    +siguienteEstado(): IEstadoItem
+    +validarModificacion(): void
+    +getNombre(): string
+    +estaListo(): boolean
+}
+
+class EstadoItemPendiente implements IEstadoItem
+class EstadoItemEnPreparacion implements IEstadoItem
+class EstadoItemListo implements IEstadoItem
+
+' ===================== Estaciones =====================
+
+abstract class Estacion {
+    -nombreEstacion: string
+    -itemsEstacion: Cola<Item>
+    +getNombreEstacion(): string
+    +setNombreEstacion(nombreEstacion: string): void
+    +recibirItem(item: Item): void
+    +procesarSiguiente(): void
+}
+
+class Parrilla extends Estacion
+class CocinaFria extends Estacion
+class Barra extends Estacion
+class CocinaDulce extends Estacion
+
+' ===================== Estructuras de datos =====================
+
+class Cola<T> {
+    -first: MyNode<T>
+    -last: MyNode<T>
+    +encolar(value: T): void
+    +desencolar(): T | undefined
+    +estaVacia(): boolean
+}
+
+class MyNode<T> {
+    -_value: T
+    -_next: MyNode<T>
+    +get value(): T
+    +get next(): MyNode<T>
+    +set next(nodo: MyNode<T>)
+}
+
+' ===================== Errores =====================
+
+class Error
+
+package error {
+    class ErrorComidaNoDisponible
+    class ErrorItemNoModificable
+    class ErrorItemsInsuficientesParaCombo
+    class ErrorItemsNoDisponiblesEnCombo
+    class ErrorPrecioFijoComboIncorrecto
+}
+
+Error <|-- ErrorComidaNoDisponible
+Error <|-- ErrorItemNoModificable
+Error <|-- ErrorItemsInsuficientesParaCombo
+Error <|-- ErrorItemsNoDisponiblesEnCombo
+Error <|-- ErrorPrecioFijoComboIncorrecto
+
+' ===================== Relaciones =====================
+
+Pedido o-- Comida
+Menu o-- Comida
+Combo o-- Item
+Combo --> IEstrategiaPrecioCombo
+Item *-- IEstadoItem
+Item --> Estacion
+Estacion *-- Cola
+Cola *-- MyNode
+PedidoSalon --> Empleado
+PedidoDelivery --> Empleado
+
+Empleado ..> Pedido
+Empleado ..> IPedidoModificable
+
+EstadoItemPendiente ..> EstadoItemEnPreparacion
+EstadoItemEnPreparacion ..> EstadoItemListo
+
 @enduml

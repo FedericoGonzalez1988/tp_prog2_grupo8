@@ -6,7 +6,7 @@ describe("Primer test", () => {
   afterEach(() => {
   });
 
-  test("happy path", () => {
+  it("happy path", () => {
     expect(2+2).toEqual(4);
   })
 })
