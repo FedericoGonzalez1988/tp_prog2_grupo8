@@ -1,12 +1,12 @@
 import Pedido from "./pedido";
 import Comida from "./comida";
-import Mozo from "./mozo";
+import Empleado from "./empleado";
 
 export default class PedidoSalon extends Pedido {
     private mesa: string;
-    private mozo: Mozo;
+    private mozo: Empleado;
 
-    public constructor(numeroDePedido: string, productos: Comida[], mesa: string, mozo: Mozo) {
+    public constructor(numeroDePedido: string, productos: Comida[], mesa: string, mozo: Empleado) {
         super(numeroDePedido,productos);
         this.mesa = mesa;
         this.mozo = mozo
