@@ -1,13 +1,13 @@
 import Cola from "./cola";
-import Item from "./item";
+import ItemPedidoSimple from "./itemPedidoSimple";
 
 export default abstract class Estacion {
     private nombreEstacion: string;
-    private itemsEstacion: Cola<Item>;
+    private itemsEstacion: Cola<ItemPedidoSimple>;
 
     public constructor(nombreEstacion: string) {
         this.nombreEstacion = nombreEstacion;
-        this.itemsEstacion=new Cola<Item>();
+        this.itemsEstacion=new Cola<ItemPedidoSimple>();
     }
 
     public getNombreEstacion(): string {
@@ -18,18 +18,21 @@ export default abstract class Estacion {
         this.nombreEstacion = nombreEstacion;
     }
 
-    public recibirItem(item: Item): void {
+    public recibirItem(item: ItemPedidoSimple): void {
         this.itemsEstacion.encolar(item);
     }
 
-    public procesarSiguiente(): void {
-        if (!this.itemsEstacion.estaVacia()) {
-            const itemActual = this.itemsEstacion.desencolar();
-            
-            if (itemActual) {
-                itemActual.avanzarEstado();
-            }
+    /**
+     * Toma el siguiente item en orden de llegada y lo pasa a "en preparacion".
+     * Devuelve el item para que el cocinero lo marque como listo al terminarlo.
+     * Si la cola esta vacia devuelve undefined.
+     */
+    public procesarSiguiente(): ItemPedidoSimple | undefined {
+        const itemActual = this.itemsEstacion.desencolar();
+        if (itemActual) {
+            itemActual.avanzarEstado();
         }
+        return itemActual;
     }
 
 }

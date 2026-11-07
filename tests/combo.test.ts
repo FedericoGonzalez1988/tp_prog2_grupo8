@@ -1,18 +1,19 @@
 import { mock, MockProxy } from "jest-mock-extended";
 import Combo from "../src/combo";
-import Item from "../src/item";
+import Producto from "../src/producto";
+import ItemPedidoCombo from "../src/itemPedidoCombo";
 import IEstrategiaPrecioCombo from "../src/iEstrategiaPrecioCombo";
 import ErrorItemsInsuficientesParaCombo from "../src/error/errorItemsInsuficientesParaCombo";
 import ErrorItemsNoDisponiblesEnCombo from "../src/error/errorItemsNoDisponiblesEnCombo";
 
 describe("Combo", () => {
-  let hamburguesa: MockProxy<Item>;
-  let gaseosa: MockProxy<Item>;
+  let hamburguesa: MockProxy<Producto>;
+  let gaseosa: MockProxy<Producto>;
   let estrategia: MockProxy<IEstrategiaPrecioCombo>;
 
   beforeEach(() => {
-    hamburguesa = mock<Item>();
-    gaseosa = mock<Item>();
+    hamburguesa = mock<Producto>();
+    gaseosa = mock<Producto>();
     estrategia = mock<IEstrategiaPrecioCombo>();
     hamburguesa.getDisponible.mockReturnValue(true);
     gaseosa.getDisponible.mockReturnValue(true);
@@ -28,20 +29,27 @@ describe("Combo", () => {
       expect(combo.getDisponible()).toBe(true);
     });
 
-    it("lanza ErrorItemsInsuficientesParaCombo con un solo item", () => {
+    it("lanza ErrorItemsInsuficientesParaCombo con un solo producto", () => {
       expect(() => new Combo("Combo Burger", true, "C1", [hamburguesa], estrategia))
         .toThrow(ErrorItemsInsuficientesParaCombo);
     });
 
-    it("lanza ErrorItemsInsuficientesParaCombo sin items", () => {
+    it("lanza ErrorItemsInsuficientesParaCombo sin productos", () => {
       expect(() => new Combo("Combo Burger", true, "C1", [], estrategia))
         .toThrow(ErrorItemsInsuficientesParaCombo);
     });
 
-    it("lanza ErrorItemsNoDisponiblesEnCombo si algún item no está disponible", () => {
+    it("lanza ErrorItemsNoDisponiblesEnCombo si algún producto no está disponible", () => {
       gaseosa.getDisponible.mockReturnValue(false);
       expect(() => new Combo("Combo Burger", true, "C1", [hamburguesa, gaseosa], estrategia))
         .toThrow(ErrorItemsNoDisponiblesEnCombo);
+    });
+  });
+
+  describe("getProductos", () => {
+    it("devuelve los productos del combo en el orden en que se crearon", () => {
+      const combo = new Combo("Combo Burger", true, "C1", [hamburguesa, gaseosa], estrategia);
+      expect(combo.getProductos()).toEqual([hamburguesa, gaseosa]);
     });
   });
 
@@ -53,7 +61,7 @@ describe("Combo", () => {
       expect(estrategia.calcularPrecio).toHaveBeenCalledTimes(1);
     });
 
-    it("consulta el precio actual de cada item", () => {
+    it("consulta el precio actual de cada producto", () => {
       const combo = new Combo("Combo Burger", true, "C1", [hamburguesa, gaseosa], estrategia);
       combo.getPrecio();
       expect(hamburguesa.getPrecio).toHaveBeenCalledTimes(1);
@@ -61,19 +69,15 @@ describe("Combo", () => {
     });
   });
 
-  describe("estaListo", () => {
-    it("devuelve true si todos los items están listos", () => {
-      hamburguesa.estaListo.mockReturnValue(true);
-      gaseosa.estaListo.mockReturnValue(true);
+  describe("crearItemPedido", () => {
+    it("devuelve un ItemPedidoCombo de este combo con la cantidad indicada", () => {
       const combo = new Combo("Combo Burger", true, "C1", [hamburguesa, gaseosa], estrategia);
-      expect(combo.estaListo()).toBe(true);
-    });
 
-    it("devuelve false si algún item no está listo", () => {
-      hamburguesa.estaListo.mockReturnValue(true);
-      gaseosa.estaListo.mockReturnValue(false);
-      const combo = new Combo("Combo Burger", true, "C1", [hamburguesa, gaseosa], estrategia);
-      expect(combo.estaListo()).toBe(false);
+      const itemPedido = combo.crearItemPedido(2);
+
+      expect(itemPedido).toBeInstanceOf(ItemPedidoCombo);
+      expect((itemPedido as ItemPedidoCombo).getCombo()).toBe(combo);
+      expect(itemPedido.getCantidad()).toBe(2);
     });
   });
 });

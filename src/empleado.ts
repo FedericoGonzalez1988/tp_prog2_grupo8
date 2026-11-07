@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/class-methods-use-this */
 import Comida from "./comida";
 import Pedido from "./pedido";
+import ItemPedido from "./itemPedido";
 import IPedidoModificable from "./IPedidoModificable";
+import { NRO_UNO } from "./constants/constant";
 
 export default class Empleado {
     public constructor(
@@ -19,11 +21,11 @@ export default class Empleado {
         return this.sector
     }
 
-    public agregarItem(pedido: Pedido, item: Comida): void {
-        pedido.agregarProducto(item);
+    public agregarItem(pedido: Pedido, producto: Comida, cantidad: number = NRO_UNO): void {
+        pedido.agregarProducto(producto, cantidad);
     }
 
-    public corregirItem(pedido: IPedidoModificable, item: Comida): void {
+    public corregirItem(pedido: IPedidoModificable, item: ItemPedido): void {
         pedido.quitarHastaItem(item);
     }
 }

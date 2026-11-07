@@ -2,6 +2,7 @@ import { mock, MockProxy } from "jest-mock-extended";
 import Empleado from "../src/empleado";
 import Comida from "../src/comida";
 import Pedido from "../src/pedido";
+import ItemPedido from "../src/itemPedido";
 import IPedidoModificable from "../src/IPedidoModificable";
 
 describe("Empleado", () => {
@@ -25,10 +26,16 @@ describe("Empleado", () => {
     expect(empleado.getSector()).toBe("Salón");
   });
 
-  it("agregarItem agrega el item al pedido", () => {
+  it("agregarItem agrega el producto al pedido con cantidad 1 por defecto", () => {
     const pedido = mock<Pedido>();
     empleado.agregarItem(pedido, milanesa);
-    expect(pedido.agregarProducto).toHaveBeenCalledWith(milanesa);
+    expect(pedido.agregarProducto).toHaveBeenCalledWith(milanesa, 1);
+  });
+
+  it("agregarItem agrega el producto al pedido con la cantidad indicada", () => {
+    const pedido = mock<Pedido>();
+    empleado.agregarItem(pedido, milanesa, 3);
+    expect(pedido.agregarProducto).toHaveBeenCalledWith(milanesa, 3);
   });
 
   it("agregarItem propaga el error si el pedido rechaza el item", () => {
@@ -41,7 +48,8 @@ describe("Empleado", () => {
 
   it("corregirItem quita del pedido hasta el item indicado", () => {
     const pedido = mock<IPedidoModificable>();
-    empleado.corregirItem(pedido, milanesa);
-    expect(pedido.quitarHastaItem).toHaveBeenCalledWith(milanesa);
+    const itemPedido = mock<ItemPedido>();
+    empleado.corregirItem(pedido, itemPedido);
+    expect(pedido.quitarHastaItem).toHaveBeenCalledWith(itemPedido);
   });
 });
