@@ -1,6 +1,6 @@
-import Comida from "./comida"
+import ItemPedido from "./itemPedido"
 
 export default interface IPedidoModificable {
-    deshacerUltimoItem(): Comida | null;
-    quitarHastaItem(item: Comida): void;
+    deshacerUltimoItem(): ItemPedido | null;
+    quitarHastaItem(item: ItemPedido): void;
 }

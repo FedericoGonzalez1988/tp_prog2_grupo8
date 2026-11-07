@@ -1,14 +1,16 @@
+import ItemPedido from "./itemPedido";
+
 export default abstract class Comida {
 
     public constructor(private nombre: string, private disponible: boolean) {
         this.nombre = nombre;
         this.disponible = disponible;
     }
- 
+
 
     public abstract getPrecio(): number;
 
-    public abstract estaListo(): boolean;
+    public abstract crearItemPedido(cantidad: number): ItemPedido;
 
     public setNombre(nombre: string): void {
         this.nombre = nombre;

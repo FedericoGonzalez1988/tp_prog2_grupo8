@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { mock, MockProxy } from 'jest-mock-extended';
 import Estacion from '../src/estacion';
-import Item from '../src/item';
+import ItemPedidoSimple from '../src/itemPedidoSimple';
 import { NRO_CERO } from '../src/constants/constant';
 
 const NOMBRE_INICIAL_ESTACION = 'Cocina Principal';
@@ -15,12 +15,12 @@ class EstacionDePrueba extends Estacion {
 }
 
 describe('Estacion', (): void => {
-  let itemMockUno: MockProxy<Item>;
-  let itemMockDos: MockProxy<Item>;
+  let itemMockUno: MockProxy<ItemPedidoSimple>;
+  let itemMockDos: MockProxy<ItemPedidoSimple>;
 
   beforeEach((): void => {
-    itemMockUno = mock<Item>();
-    itemMockDos = mock<Item>();
+    itemMockUno = mock<ItemPedidoSimple>();
+    itemMockDos = mock<ItemPedidoSimple>();
   });
 
   it('getNombreEstacion devuelve el nombre indicado en el constructor', (): void => {
@@ -34,20 +34,23 @@ describe('Estacion', (): void => {
     expect(estacionPrueba.getNombreEstacion()).toBe(NOMBRE_NUEVO_ESTACION);
   });
 
-  it('procesarSiguiente no realiza acciones si la cola de items esta vacia', (): void => {
+  it('procesarSiguiente devuelve undefined y no realiza acciones si la cola esta vacia', (): void => {
     const estacionPrueba = new EstacionDePrueba(NOMBRE_INICIAL_ESTACION);
-    estacionPrueba.procesarSiguiente();
 
+    const itemProcesado = estacionPrueba.procesarSiguiente();
+
+    expect(itemProcesado).toBeUndefined();
     expect(itemMockUno.avanzarEstado).not.toHaveBeenCalled();
   });
 
-  it('procesarSiguiente desencola un item y llama a avanzarEstado', (): void => {
+  it('procesarSiguiente desencola un item, llama a avanzarEstado y lo devuelve', (): void => {
     const estacionPrueba = new EstacionDePrueba(NOMBRE_INICIAL_ESTACION);
     estacionPrueba.recibirItem(itemMockUno);
 
-    estacionPrueba.procesarSiguiente();
+    const itemProcesado = estacionPrueba.procesarSiguiente();
 
     expect(itemMockUno.avanzarEstado).toHaveBeenCalledTimes(CANTIDAD_LLAMADOS_UNO);
+    expect(itemProcesado).toBe(itemMockUno);
   });
 
   it('procesarSiguiente atiende los items en orden FIFO', (): void => {
@@ -56,11 +59,11 @@ describe('Estacion', (): void => {
     estacionPrueba.recibirItem(itemMockUno);
     estacionPrueba.recibirItem(itemMockDos);
 
-    estacionPrueba.procesarSiguiente();
+    expect(estacionPrueba.procesarSiguiente()).toBe(itemMockUno);
     expect(itemMockUno.avanzarEstado).toHaveBeenCalledTimes(CANTIDAD_LLAMADOS_UNO);
     expect(itemMockDos.avanzarEstado).toHaveBeenCalledTimes(NRO_CERO);
 
-    estacionPrueba.procesarSiguiente();
+    expect(estacionPrueba.procesarSiguiente()).toBe(itemMockDos);
     expect(itemMockDos.avanzarEstado).toHaveBeenCalledTimes(CANTIDAD_LLAMADOS_UNO);
   });
 });
