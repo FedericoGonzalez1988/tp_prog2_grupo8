@@ -19,4 +19,9 @@ export default class PedidoDelivery extends Pedido {
         this.costoEnvio = costoEnvio;
     }
 
+    /** Suma el costo de envio al total. El envio nunca recibe descuentos (se descuenta sobre el subtotal). */
+    public calcularTotal(): number {
+        return super.calcularTotal() + this.costoEnvio;
+    }
+
 }

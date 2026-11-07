@@ -83,6 +83,7 @@ package "Pedidos" {
         +quitarItem(item: ItemPedido): void
         +confirmar(): void
         +marcarListo(): void
+        +calcularSubtotal(): number
         +calcularTotal(): number
         +puedeFacturarse(): boolean
         #deshacerUltimo(): ItemPedido | null
@@ -107,6 +108,7 @@ package "Pedidos" {
         -cadete: Empleado
         -direccion: string
         -costoEnvio: number
+        +calcularTotal(): number
     }
 
     interface IPedidoModificable {
@@ -241,6 +243,65 @@ Estacion *-- Cola
 Cola *-- MyNode
 Producto "*" -right-> "1" Estacion
 ItemPedidoSimple "*" --o Estacion : (via Cola)
+
+' ===================== Pago =====================
+
+package "Pago" {
+    class Caja {
+        -descuentos: IDescuento[]
+        +calcularTotalACobrar(pedido: Pedido, medioPago: IMedioPago): number
+        -calcularMejorDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    interface IMedioPago {
+        +getNombre(): string
+        +esEfectivo(): boolean
+    }
+    class Efectivo
+    class TarjetaDebito
+    class TarjetaCredito
+    class BilleteraVirtual
+
+    ' Descuentos (patron Strategy)
+    interface IDescuento {
+        +calcularDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class DescuentoEfectivo {
+        -porcentaje: number
+        +calcularDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class DescuentoDiaEspecial {
+        -diaSemana: DiaSemana
+        -porcentaje: number
+        +calcularDescuento(total: number): number
+    }
+
+    enum DiaSemana {
+        DOMINGO
+        LUNES
+        MARTES
+        MIERCOLES
+        JUEVES
+        VIERNES
+        SABADO
+    }
+}
+
+IMedioPago <|.. Efectivo
+IMedioPago <|.. TarjetaDebito
+IMedioPago <|.. TarjetaCredito
+IMedioPago <|.. BilleteraVirtual
+
+IDescuento <|.. DescuentoEfectivo
+IDescuento <|.. DescuentoDiaEspecial
+DescuentoDiaEspecial --> DiaSemana
+DescuentoEfectivo ..> IMedioPago
+
+Caja o-- "*" IDescuento
+Caja ..> IMedioPago
+Caja .up.> Pedido
 
 ' ===================== Empleados =====================
 

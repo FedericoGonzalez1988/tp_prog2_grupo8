@@ -55,8 +55,14 @@ export default abstract class Pedido {
         this.estado = this.estado.marcarListo();
     }
 
-    public calcularTotal(): number {
+    /** Suma de los items del pedido (productos y combos con su beneficio). Es la base de los descuentos. */
+    public calcularSubtotal(): number {
         return this.items.reduce((total, item) => total + item.getSubtotal(), NRO_CERO);
+    }
+
+    /** Total del pedido. Las modalidades con cargos extra (ej. envio) lo sobrescriben. */
+    public calcularTotal(): number {
+        return this.calcularSubtotal();
     }
 
     public puedeFacturarse(): boolean {

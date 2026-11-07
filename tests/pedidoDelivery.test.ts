@@ -4,11 +4,13 @@ import PedidoDelivery from "../src/pedidoDelivery";
 import Empleado from "../src/empleado";
 import Comida from "../src/comida";
 import ErrorComidaNoDisponible from "../src/error/errorComidaNoDisponible";
+import ItemPedido from "../src/itemPedido";
 
 const NUMERO_PEDIDO_MUESTRA = "PED-001";
 const DIRECCION_ENTREGA_MUESTRA = "Carlos Villate 4480";
 const COSTO_ENVIO_MUESTRA = 500;
 const CANTIDAD_PRODUCTOS_UNO = 1;
+const SUBTOTAL_PRODUCTOS_MUESTRA = 8000;
 
 describe("PedidoDelivery - Creación e Instanciación", (): void => {
   let cadeteMock: MockProxy<Empleado>;
@@ -70,5 +72,42 @@ describe("PedidoDelivery - Agregar Productos", (): void => {
     expect((): void => {
       pedidoDelivery.agregarProducto(productoNoDisponibleMock);
     }).toThrow(ErrorComidaNoDisponible);
+  });
+});
+describe("PedidoDelivery - Totales", (): void => {
+  let cadeteMock: MockProxy<Empleado>;
+  let productoMock: MockProxy<Comida>;
+
+  beforeEach((): void => {
+    cadeteMock = mock<Empleado>();
+    productoMock = mock<Comida>();
+    const itemPedidoMock = mock<ItemPedido>();
+    productoMock.getDisponible.mockReturnValue(true);
+    productoMock.crearItemPedido.mockReturnValue(itemPedidoMock);
+    itemPedidoMock.getSubtotal.mockReturnValue(SUBTOTAL_PRODUCTOS_MUESTRA);
+  });
+
+  it("calcularSubtotal suma solo los productos, sin el costo de envio", (): void => {
+    const pedidoDelivery = new PedidoDelivery(
+      NUMERO_PEDIDO_MUESTRA,
+      [productoMock],
+      cadeteMock,
+      DIRECCION_ENTREGA_MUESTRA,
+      COSTO_ENVIO_MUESTRA
+    );
+
+    expect(pedidoDelivery.calcularSubtotal()).toBe(SUBTOTAL_PRODUCTOS_MUESTRA);
+  });
+
+  it("calcularTotal suma el costo de envio al subtotal", (): void => {
+    const pedidoDelivery = new PedidoDelivery(
+      NUMERO_PEDIDO_MUESTRA,
+      [productoMock],
+      cadeteMock,
+      DIRECCION_ENTREGA_MUESTRA,
+      COSTO_ENVIO_MUESTRA
+    );
+
+    expect(pedidoDelivery.calcularTotal()).toBe(SUBTOTAL_PRODUCTOS_MUESTRA + COSTO_ENVIO_MUESTRA);
   });
 });
