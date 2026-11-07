@@ -140,9 +140,16 @@ describe("Pedido", () => {
     });
   });
 
-  describe("calcularTotal", () => {
+  describe("calcularSubtotal y calcularTotal", () => {
     it("devuelve 0 si el pedido no tiene items", () => {
+      expect(pedido.calcularSubtotal()).toBe(0);
       expect(pedido.calcularTotal()).toBe(0);
+    });
+
+    it("sin cargos extra, el total es igual al subtotal", () => {
+      pedido.agregarProducto(milanesa, 2);
+      expect(pedido.calcularSubtotal()).toBe(12000);
+      expect(pedido.calcularTotal()).toBe(12000);
     });
 
     it("suma los subtotales de productos y combos con su beneficio", () => {
