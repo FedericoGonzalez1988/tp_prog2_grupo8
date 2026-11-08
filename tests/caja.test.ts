@@ -13,6 +13,7 @@ import TarjetaDebito from "../src/tarjetaDebito";
 import DescuentoEfectivo from "../src/descuentoEfectivo";
 import DescuentoDiaEspecial from "../src/descuentoDiaEspecial";
 import DiaSemana from "../src/diaSemana";
+import ErrorPedidoNoFacturable from "../src/error/errorPedidoNoFacturable";
 
 const UN_MARTES = new Date(2026, 10, 10);
 const UN_MIERCOLES = new Date(2026, 10, 11);
@@ -98,5 +99,102 @@ describe("Caja (escenarios completos)", () => {
 
     // 10% de 10000 (solo productos) = 1000 -> (10000 + 1500) - 1000
     expect(caja.calcularTotalACobrar(pedido, new Efectivo())).toBe(10500);
+  });
+});
+
+describe("Caja - facturacion e historial", () => {
+  let parrilla: Parrilla;
+  let milanesa: Producto;
+  let caja: Caja;
+
+  beforeEach(() => {
+    parrilla = new Parrilla();
+    milanesa = new Producto("Milanesa", true, 5000, parrilla);
+    caja = new Caja([new DescuentoEfectivo(10)]);
+    jest.useFakeTimers().setSystemTime(UN_MIERCOLES);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  /** Confirma el pedido, la parrilla prepara todo y el pedido queda listo para facturar. */
+  function prepararPedidoListo(pedido: Pedido): void {
+    pedido.confirmar();
+    let item = parrilla.procesarSiguiente();
+    while (item) {
+      item.avanzarEstado();
+      item = parrilla.procesarSiguiente();
+    }
+    pedido.marcarListo();
+  }
+
+  it("empieza con el historial vacio", () => {
+    expect(caja.getHistorial()).toHaveLength(0);
+  });
+
+  it("factura un pedido listo: devuelve la factura con el descuento aplicado y la guarda en el historial", () => {
+    const pedido = new PedidoSalon("P-1", [milanesa, milanesa], "Mesa 2", mock<Empleado>());
+    prepararPedidoListo(pedido);
+
+    const factura = caja.facturar(pedido, new Efectivo());
+
+    expect(factura.getNumeroPedido()).toBe("P-1");
+    expect(factura.getDescuento()).toBe(1000);
+    expect(factura.getTotal()).toBe(9000);
+    expect(caja.getHistorial()).toEqual([factura]);
+  });
+
+  it("al facturar el pedido queda finalizado y no se puede facturar de nuevo", () => {
+    const pedido = new PedidoSalon("P-1", [milanesa], "Mesa 2", mock<Empleado>());
+    prepararPedidoListo(pedido);
+    caja.facturar(pedido, new Efectivo());
+
+    expect(pedido.puedeFacturarse()).toBe(false);
+    expect(() => caja.facturar(pedido, new Efectivo())).toThrow(ErrorPedidoNoFacturable);
+    expect(caja.getHistorial()).toHaveLength(1);
+  });
+
+  it("no factura un pedido en construccion", () => {
+    const pedido = new PedidoSalon("P-1", [milanesa], "Mesa 2", mock<Empleado>());
+
+    expect(() => caja.facturar(pedido, new Efectivo())).toThrow(ErrorPedidoNoFacturable);
+    expect(caja.getHistorial()).toHaveLength(0);
+  });
+
+  it("no factura un pedido si algun item no esta listo", () => {
+    const pedido = new PedidoSalon("P-1", [milanesa, milanesa], "Mesa 2", mock<Empleado>());
+    pedido.confirmar();
+    parrilla.procesarSiguiente()?.avanzarEstado();
+    pedido.marcarListo();
+
+    expect(() => caja.facturar(pedido, new Efectivo())).toThrow(ErrorPedidoNoFacturable);
+    expect(caja.getHistorial()).toHaveLength(0);
+  });
+
+  it("guarda en el historial cada pedido facturado, en orden, con el detalle de lo cobrado", () => {
+    const pedidoSalon = new PedidoSalon("P-1", [milanesa], "Mesa 2", mock<Empleado>());
+    const pedidoDelivery = new PedidoDelivery("P-2", [milanesa], mock<Empleado>(), "Calle 123", 1500);
+    prepararPedidoListo(pedidoSalon);
+    prepararPedidoListo(pedidoDelivery);
+
+    caja.facturar(pedidoSalon, new TarjetaDebito());
+    caja.facturar(pedidoDelivery, new Efectivo());
+
+    const historial = caja.getHistorial();
+    expect(historial.map(factura => factura.getNumeroPedido())).toEqual(["P-1", "P-2"]);
+    expect(historial[0].getTotal()).toBe(5000);
+    expect(historial[1].getCargosExtra()).toBe(1500);
+    expect(historial[1].getTotal()).toBe(5000 + 1500 - 500);
+  });
+
+  it("getHistorial devuelve una copia que no modifica el historial de la caja", () => {
+    const pedido = new PedidoSalon("P-1", [milanesa], "Mesa 2", mock<Empleado>());
+    prepararPedidoListo(pedido);
+    caja.facturar(pedido, new Efectivo());
+
+    caja.getHistorial().pop();
+
+    expect(caja.getHistorial()).toHaveLength(1);
   });
 });

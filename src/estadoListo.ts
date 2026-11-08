@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/class-methods-use-this */
 
 import ErrorPedidoYaListo from "./error/errorPedidoYaListo";
+import EstadoFacturado from "./estadoFacturado";
 import IEstadoPedido from "./iEstadoPedido";
 
 export default class EstadoListo implements IEstadoPedido {
@@ -18,5 +19,9 @@ export default class EstadoListo implements IEstadoPedido {
 
     public marcarListo(): IEstadoPedido {
         throw new ErrorPedidoYaListo("El pedido ya se encuentra listo.");
+    }
+
+    public marcarFacturado(): IEstadoPedido {
+        return new EstadoFacturado();
     }
 }

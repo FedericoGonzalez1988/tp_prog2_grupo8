@@ -22,6 +22,11 @@ describe("ItemPedidoSimple", () => {
     expect(itemPedido.getCantidad()).toBe(2);
   });
 
+  it("getDescripcion devuelve el nombre del producto", () => {
+    producto.getNombre.mockReturnValue("Milanesa");
+    expect(itemPedido.getDescripcion()).toBe("Milanesa");
+  });
+
   it("comienza en estado Pendiente y sin estar listo", () => {
     expect(itemPedido.getNombreEstado()).toBe("Pendiente");
     expect(itemPedido.estaListo()).toBe(false);

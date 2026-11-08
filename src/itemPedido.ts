@@ -10,6 +10,9 @@ export default abstract class ItemPedido {
         return this.cantidad;
     }
 
+    /** Texto con el que el item aparece en la factura (nombre del producto o del combo). */
+    public abstract getDescripcion(): string;
+
     public abstract getSubtotal(): number;
 
     public abstract estaListo(): boolean;

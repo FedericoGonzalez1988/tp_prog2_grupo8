@@ -55,6 +55,11 @@ export default abstract class Pedido {
         this.estado = this.estado.marcarListo();
     }
 
+    /** Pasa el pedido a su estado final. Lo invoca la Caja al facturarlo. */
+    public marcarFacturado(): void {
+        this.estado = this.estado.marcarFacturado();
+    }
+
     /** Suma de los items del pedido (productos y combos con su beneficio). Es la base de los descuentos. */
     public calcularSubtotal(): number {
         return this.items.reduce((total, item) => total + item.getSubtotal(), NRO_CERO);

@@ -1,0 +1,140 @@
+@startuml Gestion de Pedidos Restaurante - Pago
+
+title Gestion de Pedidos Restaurante: pago, facturacion e historial\n(menu, pedidos y cocina en clases_pedidos.puml)
+
+set separator none
+skinparam classAttributeIconSize 0
+
+' ===================== Pago y facturacion =====================
+
+package "Pago" {
+    class Caja {
+        -descuentos: IDescuento[]
+        -historial: Factura[]
+        +calcularTotalACobrar(pedido: Pedido, medioPago: IMedioPago): number
+        +facturar(pedido: Pedido, medioPago: IMedioPago): Factura
+        +getHistorial(): Factura[]
+        -calcularDescuento(pedido: Pedido, medioPago: IMedioPago): number
+        -calcularMejorDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class Factura {
+        -numeroPedido: string
+        -fecha: Date
+        -medioPago: IMedioPago
+        -lineas: LineaFactura[]
+        -subtotal: number
+        -cargosExtra: number
+        -descuento: number
+        +getNumeroPedido(): string
+        +getFecha(): Date
+        +getMedioPago(): IMedioPago
+        +getLineas(): LineaFactura[]
+        +getSubtotal(): number
+        +getCargosExtra(): number
+        +getDescuento(): number
+        +getTotal(): number
+    }
+
+    class LineaFactura {
+        -descripcion: string
+        -cantidad: number
+        -importe: number
+        +getDescripcion(): string
+        +getCantidad(): number
+        +getImporte(): number
+    }
+
+    interface IMedioPago {
+        +getNombre(): string
+        +esEfectivo(): boolean
+    }
+    class Efectivo
+    class TarjetaDebito
+    class TarjetaCredito
+    class BilleteraVirtual
+
+    ' Descuentos (patron Strategy)
+    interface IDescuento {
+        +calcularDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class DescuentoEfectivo {
+        -porcentaje: number
+        +calcularDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class DescuentoDiaEspecial {
+        -diaSemana: DiaSemana
+        -porcentaje: number
+        +calcularDescuento(total: number): number
+    }
+
+    enum DiaSemana {
+        DOMINGO
+        LUNES
+        MARTES
+        MIERCOLES
+        JUEVES
+        VIERNES
+        SABADO
+    }
+}
+
+IMedioPago <|.. Efectivo
+IMedioPago <|.. TarjetaDebito
+IMedioPago <|.. TarjetaCredito
+IMedioPago <|.. BilleteraVirtual
+
+IDescuento <|.. DescuentoEfectivo
+IDescuento <|.. DescuentoDiaEspecial
+DescuentoDiaEspecial --> DiaSemana
+DescuentoEfectivo ..> IMedioPago
+
+Caja o-- "*" IDescuento
+Caja *-- "*" Factura : historial
+Caja ..> IMedioPago
+Factura *-- "*" LineaFactura
+Factura --> "1" IMedioPago
+
+' ===================== Pedidos (resumido: solo lo que usa la caja) =====================
+
+package "Pedidos" {
+    abstract class Pedido {
+        +getNumeroPedido(): string
+        +getItems(): ItemPedido[]
+        +calcularSubtotal(): number
+        +calcularTotal(): number
+        +puedeFacturarse(): boolean
+        +marcarFacturado(): void
+    }
+
+    class PedidoDelivery {
+        -costoEnvio: number
+        +calcularTotal(): number
+    }
+
+    abstract class ItemPedido {
+        +getCantidad(): number
+        +{abstract} getDescripcion(): string
+        +{abstract} getSubtotal(): number
+    }
+}
+
+Pedido <|-- PedidoDelivery
+Pedido *-- "*" ItemPedido
+
+Caja ..> Pedido
+Factura ..> Pedido : lee al crearse
+Factura ..> ItemPedido : lee al crearse
+
+' ===================== Errores =====================
+
+class Error
+package error {
+    class ErrorPedidoNoFacturable
+}
+ErrorPedidoNoFacturable -up-|> Error
+Caja ..> ErrorPedidoNoFacturable : <<lanza>>
+
+@enduml

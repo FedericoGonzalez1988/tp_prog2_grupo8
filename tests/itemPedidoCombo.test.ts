@@ -35,6 +35,10 @@ describe("ItemPedidoCombo", () => {
     expect(itemCombo.getCantidad()).toBe(2);
   });
 
+  it("getDescripcion devuelve el nombre del combo", () => {
+    expect(itemCombo.getDescripcion()).toBe("Combo Burger");
+  });
+
   it("crea un ItemPedidoSimple por cada producto del combo, con la misma cantidad", () => {
     const componentes = itemCombo.getComponentes();
 

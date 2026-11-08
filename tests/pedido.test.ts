@@ -14,6 +14,7 @@ import ErrorComidaNoDisponible from "../src/error/errorComidaNoDisponible";
 import ErrorPedidoYaConfirmado from "../src/error/errorPedidoYaConfirmado";
 import ErrorPedidoNoConfirmado from "../src/error/errorPedidoNoConfirmado";
 import ErrorItemNoModificable from "../src/error/errorItemNoModificable";
+import ErrorPedidoNoFacturable from "../src/error/errorPedidoNoFacturable";
 
 describe("Pedido", () => {
   let parrilla: Parrilla;
@@ -198,6 +199,22 @@ describe("Pedido", () => {
       pedido.marcarListo();
 
       expect(pedido.puedeFacturarse()).toBe(true);
+    });
+  });
+
+  describe("marcarFacturado", () => {
+    it("no se puede facturar un pedido en construccion", () => {
+      expect(() => pedido.marcarFacturado()).toThrow(ErrorPedidoNoFacturable);
+    });
+
+    it("un pedido listo pasa a facturado y ya no puede facturarse ni modificarse", () => {
+      pedido.confirmar();
+      pedido.marcarListo();
+
+      pedido.marcarFacturado();
+
+      expect(pedido.puedeFacturarse()).toBe(false);
+      expect(() => pedido.agregarProducto(milanesa)).toThrow(ErrorPedidoYaConfirmado);
     });
   });
 

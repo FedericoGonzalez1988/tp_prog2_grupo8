@@ -1,3 +1,4 @@
+import ErrorPedidoNoFacturable from "../src/error/errorPedidoNoFacturable";
 import ErrorPedidoNoConfirmado from "../src/error/errorPedidoNoConfirmado";
 import EstadoConfirmado from "../src/estadoConfirmado";
 import EstadoEnConstruccion from "../src/estadoEnConstruccion";
@@ -35,6 +36,14 @@ describe("EstadoEnConstruccion", () => {
             expect(() => {
                 estado.marcarListo();
             }).toThrow(ErrorPedidoNoConfirmado);
+        });
+    });
+
+    describe("marcarFacturado", () => {
+        it("debe lanzar ErrorPedidoNoFacturable porque el pedido aún está en construcción", () => {
+            expect(() => {
+                estado.marcarFacturado();
+            }).toThrow(ErrorPedidoNoFacturable);
         });
     });
 });
