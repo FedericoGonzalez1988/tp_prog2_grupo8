@@ -1,0 +1,78 @@
+@startuml Secuencia Confirmar Pedido
+
+title Confirmar un pedido y distribuir sus items a las estaciones (Req. 4 y 5)\nEjemplo: pedido en salon con 1 Milanesa (parrilla) + 1 Combo Burger (Hamburguesa en parrilla + Gaseosa en barra)
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor Mozo
+participant "pedido\n:PedidoSalon" as pedido
+participant "estado\n:EstadoEnConstruccion" as estado
+participant "itemMilanesa\n:ItemPedidoSimple" as itemMila
+participant "itemCombo\n:ItemPedidoCombo" as itemCombo
+participant "compHamburguesa\n:ItemPedidoSimple" as compHamb
+participant "compGaseosa\n:ItemPedidoSimple" as compGas
+participant "parrilla\n:Parrilla" as parrilla
+participant "barra\n:Barra" as barra
+actor Cocinero
+
+== Confirmar ==
+
+Mozo -> pedido : confirmar()
+activate pedido
+
+pedido -> estado : confirmar()
+activate estado
+create participant "nuevoEstado\n:EstadoConfirmado" as confirmado
+estado -> confirmado : new
+estado --> pedido : nuevoEstado
+deactivate estado
+note right of pedido : estado = nuevoEstado\n(si ya estaba confirmado lanza\nErrorPedidoYaConfirmado)
+
+note over pedido, barra : items.forEach(item => item.enviarACocina())\nCada item sabe a que estacion ir (polimorfismo)
+
+pedido -> itemMila : enviarACocina()
+activate itemMila
+itemMila -> parrilla : recibirItem(itemMilanesa)
+note right of parrilla : cola = [itemMilanesa]
+itemMila --> pedido
+deactivate itemMila
+
+pedido -> itemCombo : enviarACocina()
+activate itemCombo
+note right of itemCombo : el combo no se encola:\nreparte sus componentes
+itemCombo -> compHamb : enviarACocina()
+activate compHamb
+compHamb -> parrilla : recibirItem(compHamburguesa)
+note right of parrilla : cola = [itemMilanesa, compHamburguesa]
+compHamb --> itemCombo
+deactivate compHamb
+itemCombo -> compGas : enviarACocina()
+activate compGas
+compGas -> barra : recibirItem(compGaseosa)
+note right of barra : cola = [compGaseosa]
+compGas --> itemCombo
+deactivate compGas
+itemCombo --> pedido
+deactivate itemCombo
+
+pedido --> Mozo
+deactivate pedido
+
+== Preparacion en la parrilla (orden de llegada) ==
+
+Cocinero -> parrilla : procesarSiguiente()
+activate parrilla
+note right of parrilla : desencola el primero que llego
+parrilla -> itemMila : avanzarEstado()
+note right of itemMila : Pendiente -> En Preparacion
+parrilla --> Cocinero : itemMilanesa
+deactivate parrilla
+
+Cocinero -> itemMila : avanzarEstado()
+note right of itemMila : En Preparacion -> Listo
+
+note over Cocinero, parrilla : Despues sigue compHamburguesa en la parrilla;\nla barra prepara compGaseosa en paralelo, en su propio orden.\nEl combo esta listo cuando sus dos componentes lo estan.
+
+@enduml
