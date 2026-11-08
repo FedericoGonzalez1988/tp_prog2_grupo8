@@ -5,6 +5,10 @@ import ErrorPedidoNoFacturable from "../../error/errorPedidoNoFacturable";
 import EstadoConfirmado from "./estadoConfirmado";
 import IEstadoPedido from "./iEstadoPedido";
 
+/**
+ * Pedido en construccion: se pueden agregar, quitar y deshacer items.
+ * Solo puede pasar a confirmado; marcarlo listo o facturarlo lanza error.
+ */
 export default class EstadoEnConstruccion implements IEstadoPedido {
     public puedeModificar(): boolean {
         return true;

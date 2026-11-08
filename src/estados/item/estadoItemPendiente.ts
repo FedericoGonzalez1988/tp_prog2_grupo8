@@ -4,6 +4,7 @@
 import IEstadoItem from "./iEstadoItem"
 import EstadoItemEnPreparacion from "./estadoItemEnPreparacion";
 
+/** Item pendiente: todavia no empezo a prepararse, asi que se puede modificar o cancelar. */
 export default class EstadoItemPendiente implements IEstadoItem {
     
     
