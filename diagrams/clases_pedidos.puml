@@ -77,6 +77,7 @@ package "Pedidos" {
         -numeroPedido: string
         -items: ItemPedido[]
         -estado: IEstadoPedido
+        -modificaciones: Modificacion[]
         +getNumeroPedido(): string
         +getItems(): ItemPedido[]
         +agregarProducto(producto: Comida, cantidad: number = 1): void
@@ -110,6 +111,13 @@ package "Pedidos" {
         -direccion: string
         -costoEnvio: number
         +calcularTotal(): number
+    }
+
+    ' Anotacion de cada cambio, para deshacer la ultima modificacion
+    interface Modificacion {
+        +tipo: "agregar" | "quitar"
+        +item: ItemPedido
+        +posicion: number
     }
 
     interface IPedidoModificable {
@@ -161,6 +169,8 @@ IPedidoModificable <|.. PedidoSalon
 IPedidoModificable <|.. PedidoParaLlevar
 
 Pedido *-- "*" ItemPedido
+Pedido *-- "*" Modificacion : modificaciones
+Modificacion --> "1" ItemPedido
 ItemPedido <|-- ItemPedidoSimple
 ItemPedido <|-- ItemPedidoCombo
 ItemPedidoCombo *-- "2..*" ItemPedidoSimple : componentes

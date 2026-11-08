@@ -228,8 +228,50 @@ describe("Pedido", () => {
       expect(pedido.getItems()).toEqual([itemMilanesa]);
     });
 
-    it("devuelve null si el pedido esta vacio", () => {
+    it("devuelve null si no hay modificaciones para deshacer", () => {
       expect(pedido.deshacerUltimoItem()).toBeNull();
+    });
+
+    it("si la ultima modificacion fue quitar, vuelve a poner el item en su lugar", () => {
+      pedido.agregarProducto(milanesa);
+      pedido.agregarProducto(gaseosa);
+      const [itemMilanesa, itemGaseosa] = pedido.getItems();
+      pedido.quitarItem(itemMilanesa);
+
+      expect(pedido.deshacerUltimoItem()).toBe(itemMilanesa);
+      expect(pedido.getItems()).toEqual([itemMilanesa, itemGaseosa]);
+    });
+
+    it("deshace las modificaciones de a una, de la mas nueva a la mas vieja", () => {
+      pedido.agregarProducto(milanesa);
+      pedido.agregarProducto(gaseosa);
+      const [itemMilanesa, itemGaseosa] = pedido.getItems();
+      pedido.quitarItem(itemMilanesa);
+
+      pedido.deshacerUltimoItem();   // deshace "quitar milanesa"
+      expect(pedido.getItems()).toEqual([itemMilanesa, itemGaseosa]);
+
+      pedido.deshacerUltimoItem();   // deshace "agregar gaseosa"
+      expect(pedido.getItems()).toEqual([itemMilanesa]);
+
+      pedido.deshacerUltimoItem();   // deshace "agregar milanesa"
+      expect(pedido.getItems()).toEqual([]);
+
+      expect(pedido.deshacerUltimoItem()).toBeNull();
+    });
+
+    it("despues de quitarHastaItem, deshace volviendo a poner los items de a uno", () => {
+      pedido.agregarProducto(milanesa);
+      pedido.agregarProducto(gaseosa);
+      pedido.agregarProducto(comboBurger);
+      const [itemMilanesa, itemGaseosa, itemCombo] = pedido.getItems();
+      pedido.quitarHastaItem(itemGaseosa);
+
+      pedido.deshacerUltimoItem();
+      expect(pedido.getItems()).toEqual([itemMilanesa, itemGaseosa]);
+
+      pedido.deshacerUltimoItem();
+      expect(pedido.getItems()).toEqual([itemMilanesa, itemGaseosa, itemCombo]);
     });
 
     it("no quita el ultimo item si ya no se puede modificar", () => {
