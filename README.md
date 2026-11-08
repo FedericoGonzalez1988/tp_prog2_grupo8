@@ -1,62 +1,103 @@
-# Configuración del entorno de desarrollo para Programación 2
+# 🍽 Fogón del Barrio — Gestión de Pedidos en un Restaurante
 
-Vamos a comentar cómo instalar todos los componentes necesarios sobre la máquina host.
+Trabajo práctico de **Programación 2** (grupo 8). Sistema en TypeScript que digitaliza la gestión de pedidos de un restaurante: desde que el cliente hace el pedido, pasando por la preparación en las estaciones de cocina, hasta el cobro y el historial de lo facturado.
 
-## Instalar NodeJs
+## Funcionalidades
 
-1. Ingresar a [NodeJs - Descargas](https://nodejs.org/en/download/) y seleccionar según la plataforma en la que nos encontremos el instalador que mejor se adapte a nuestro sistema operativo.
+- **Tres modalidades de pedido**: en el salón (mesa y mozo), para llevar (horario de retiro) y delivery (dirección, cadete y costo de envío).
+- **Menú con productos y combos**. El beneficio del combo puede ser un descuento porcentual o un precio fijo.
+- **Corrección de pedidos en construcción**: agregar y quitar productos, deshacer la última modificación y borrar hasta un ítem determinado.
+- **Cocina por estaciones** (parrilla, cocina fría, barra y cocina dulce). Cada estación prepara sus ítems en el orden en que llegaron, y cada ítem pasa por *pendiente → en preparación → listo*.
+- **Cobro** con efectivo, tarjeta de débito, tarjeta de crédito o billetera virtual. Se aplica un descuento por pago en efectivo o por día especial, solo el más beneficioso. El costo de envío nunca recibe descuento.
+- **Facturación e historial**: un pedido solo se factura cuando todos sus ítems están listos, y queda registrado en el historial con el detalle de lo cobrado.
 
-👉 En el caso de Windows, seleccionar los instaladores que se encuentran en la pestaña "Prebuilt Installer"
+## Requisitos
 
+- [Node.js](https://nodejs.org/en/download/) en una versión estable (LTS). En Windows, usar el instalador de la pestaña *Prebuilt Installer*; en macOS o Linux, *Package Manager* con NVM.
+- npm (se instala junto con Node.js).
 
+## Instalación
 
-👉 En el caso de MacOs o Linux, seleccionar la pestaña "Package Manager" y seleccionar "NVM" en el último combo. Luego copiar y ejecutar en una terminal los comandos que se muestran.
-
-
-
-⚠️ **En todos los casos seleccionar alguna versión estable (LTS)**
-
-## Directorio de trabajo
-
-Una vez instalado node, debemos crear el directorio en el cual vamos a desarrollar.
-Crear un directorio, que será el directorio del proyecto a utilizar y dentro del mismo descomprimir el archivo 📦 *bootstrap.zip*.
-
-Este archivo contiene lo siguiente:
-
-📂/
-
-- 📂 src: directorio donde crearemos todos los archivos typescript (\*.ts)
-  - 📄 index.ts: archivo de prueba. A futuro será nuestro punto de entrada.
-- 📂 tests: directorio donde crearemos las pruebas unitarias 
-- 📄 package.json: este archivo contiene los comandos a utilizar en el desarrollo y los paquetes necesarios para construir nuestra solución.
-- 📄 tsconfig.json: este archivo contiene la configuración utilizada en el proceso de "compilación"
-- 📄 jest.config.js: este archivo contiene la configuración utilizada durante la ejecución de las pruebas unitarias.
-- 📄 README.md: este archivo.
-
-## Instalar las dependencias
-
-Desde una terminal, ingresar al directorio de trabajo creado y ejecutar el siguiente comando: 
+Desde la carpeta del proyecto:
 
 ```bash
-# comando que permite instalar los paquetes especificados en el archivo package.json
-user@host:~$ npm i
+# instala las dependencias definidas en package.json
+npm i
 ```
 
-## Compilar el proyecto
+## Comandos
 
-Desde una terminal, ingresar al directorio de trabajo creado y ejecutar el siguiente comando: 
+| Comando | Qué hace |
+| --- | --- |
+| `npm run lint` | Revisa el código de `src/` con ESLint |
+| `npm run lint-fix` | Revisa el código y corrige automáticamente lo que se pueda |
+| `npm run build` | Limpia `dist/`, ejecuta el lint y compila TypeScript a `dist/` |
+| `npm test` | Ejecuta el build y luego todas las pruebas unitarias con Jest, con reporte de cobertura |
 
-```bash
-# comando que permite compilar la solución.
-user@host:~$ npm run build
+El reporte de cobertura queda en `coverage/`. Para verlo en detalle, abrir `coverage/lcov-report/index.html` en el navegador. El enunciado exige superar el 80 %.
+
+## Estructura del proyecto
+
+```
+📂 src/            código fuente (una clase por archivo)
+   📂 constants/   constantes numéricas (evitan números mágicos)
+   📂 error/       errores propios del dominio
+📂 tests/          pruebas unitarias (*.test.ts)
+📂 diagrams/       diagramas UML en PlantUML
+📄 Enunciado.pdf   enunciado del trabajo práctico
 ```
 
-## Configurar VisualCode (IDE)
+## Diseño
 
-Instalar los siguientes complementos:
+### Diagramas
 
-* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
-* [JEST](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest)
+| Archivo | Contenido |
+| --- | --- |
+| `diagrams/clases.puml` | Diagrama de clases: menú, pedidos, estados, cocina, pago y facturación (las clases de error, en `src/error/`, no se incluyen para que el diagrama sea legible) |
+| `diagrams/secuencia_confirmar_pedido.puml` | Secuencia: confirmar un pedido y distribuir sus ítems a las estaciones |
+| `diagrams/secuencia_facturar_pedido.puml` | Secuencia: facturar un pedido y guardarlo en el historial |
+
+Para verlos en VS Code, instalar la extensión [PlantUML](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml) (requiere Java), abrir el archivo y presionar **Alt+D**.
+
+### Patrones utilizados
+
+| Patrón | Dónde | Para qué |
+| --- | --- | --- |
+| **State** | `IEstadoPedido` (en construcción → confirmado → listo → facturado) | Cada estado decide qué se puede hacer con el pedido (modificarlo, confirmarlo, facturarlo) |
+| **State** | `IEstadoItem` (pendiente → en preparación → listo) | Un ítem en preparación o listo no se puede modificar ni cancelar |
+| **Strategy** | `IEstrategiaPrecioCombo` | Calcular el precio del combo con descuento porcentual o precio fijo |
+| **Strategy** | `IDescuento` | Descuento por efectivo o por día especial; agregar uno nuevo es crear una clase |
+| **Composite** | `ItemPedido` → `ItemPedidoSimple` / `ItemPedidoCombo` | Un combo se trata como un ítem, pero cada producto va a su estación con su propio estado |
+| **Factory Method** | `Comida.crearItemPedido()` | Cada producto o combo crea el ítem de pedido que le corresponde, sin preguntar el tipo |
+
+### Decisiones de diseño
+
+- **El producto del menú no tiene estado; el ítem del pedido sí.** `Producto` y `Combo` son el catálogo. Al agregarlos a un pedido se crea un `ItemPedido` con su cantidad y su estado propio, así dos pedidos con el mismo producto no comparten estado.
+- **Un combo llega a todas sus estaciones.** `ItemPedidoCombo` crea un `ItemPedidoSimple` por cada producto del combo, y cada uno se encola en su estación. El combo está listo cuando todos sus componentes lo están.
+- **Cola propia por estación.** Cada `Estacion` usa una `Cola` (implementada con `MyNode`) para respetar el orden de llegada.
+- **Deshacer con un array de modificaciones.** El pedido anota cada cambio (agregar o quitar, con el ítem y su posición) en un array, y `deshacerUltimoItem()` revierte la última anotación.
+- **El envío no recibe descuento.** `Caja` calcula el descuento sobre `calcularSubtotal()` (solo productos), y `PedidoDelivery` suma el envío en `calcularTotal()`.
+- **La factura es una foto del cobro.** `Factura` copia descripciones, cantidades e importes, así el historial no cambia si después se modifican los precios del menú.
+
+## Requerimientos funcionales
+
+| # | Requerimiento | Dónde se resuelve |
+| --- | --- | --- |
+| 1 | Registrar pedidos en las tres modalidades | `PedidoSalon`, `PedidoParaLlevar`, `PedidoDelivery` |
+| 2 | Agregar y quitar productos o combos en construcción | `Pedido.agregarProducto()`, `Pedido.quitarItem()` |
+| 3 | Deshacer la última modificación | `IPedidoModificable.deshacerUltimoItem()` y el array `Pedido.modificaciones` |
+| 4 | Confirmar y distribuir ítems a las estaciones | `Pedido.confirmar()`, `ItemPedido.enviarACocina()` |
+| 5 | Cada estación procesa en orden de llegada | `Estacion.procesarSiguiente()` con `Cola` |
+| 6 | No modificar ni cancelar ítems en preparación | `IEstadoItem.validarModificacion()` |
+| 7 | No facturar hasta que todos los ítems estén listos | `Pedido.puedeFacturarse()`, `Caja.facturar()` |
+| 8 | Precio total con productos y combos | `Pedido.calcularSubtotal()`, `Pedido.calcularTotal()`, `Combo.getPrecio()` |
+| 9 | Total a cobrar según medio de pago y descuento más beneficioso | `Caja.calcularTotalACobrar()`, `IDescuento`, `IMedioPago` |
+| 10 | Historial de pedidos finalizados con el detalle cobrado | `Caja.getHistorial()`, `Factura`, `LineaFactura` |
+
+## Herramientas recomendadas (VS Code)
+
+* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+* [Jest](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest)
 * [PlantUML](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml)
 * [Test Adapter Converter](https://marketplace.visualstudio.com/items?itemName=ms-vscode.test-adapter-converter)
 * [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer)
