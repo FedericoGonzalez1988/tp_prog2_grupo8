@@ -1,6 +1,6 @@
-@startuml Gestion de Pedidos Restaurante - Pedidos
+@startuml Gestion de Pedidos Restaurante
 
-title Gestion de Pedidos Restaurante: menu, pedidos y cocina\n(pago y facturacion en clases_pago.puml)
+title Gestion de Pedidos Restaurante
 
 set separator none
 skinparam classAttributeIconSize 0
@@ -279,42 +279,101 @@ PedidoDelivery --> Empleado : cadete
 Empleado ..> Pedido
 Empleado ..> IPedidoModificable
 
-' ===================== Errores =====================
+' ===================== Pago y facturacion =====================
 
-class Error
+package "Pago" {
+    class Caja {
+        -descuentos: IDescuento[]
+        -historial: Factura[]
+        +calcularTotalACobrar(pedido: Pedido, medioPago: IMedioPago): number
+        +facturar(pedido: Pedido, medioPago: IMedioPago): Factura
+        +getHistorial(): Factura[]
+        -calcularDescuento(pedido: Pedido, medioPago: IMedioPago): number
+        -calcularMejorDescuento(total: number, medioPago: IMedioPago): number
+    }
 
-package error {
-    class ErrorComidaNoDisponible
-    class ErrorItemNoModificable
-    class ErrorItemsInsuficientesParaCombo
-    class ErrorItemsNoDisponiblesEnCombo
-    class ErrorPrecioFijoComboIncorrecto
-    class ErrorPedidoNoConfirmado
-    class ErrorPedidoYaConfirmado
-    class ErrorPedidoYaListo
-    class ErrorPedidoNoFacturable
-    class ErrorPedidoYaFacturado
+    class Factura {
+        -numeroPedido: string
+        -fecha: Date
+        -medioPago: IMedioPago
+        -lineas: LineaFactura[]
+        -subtotal: number
+        -cargosExtra: number
+        -descuento: number
+        +getNumeroPedido(): string
+        +getFecha(): Date
+        +getMedioPago(): IMedioPago
+        +getLineas(): LineaFactura[]
+        +getSubtotal(): number
+        +getCargosExtra(): number
+        +getDescuento(): number
+        +getTotal(): number
+    }
+
+    class LineaFactura {
+        -descripcion: string
+        -cantidad: number
+        -importe: number
+        +getDescripcion(): string
+        +getCantidad(): number
+        +getImporte(): number
+    }
+
+    interface IMedioPago {
+        +getNombre(): string
+        +esEfectivo(): boolean
+    }
+    class Efectivo
+    class TarjetaDebito
+    class TarjetaCredito
+    class BilleteraVirtual
+
+    ' Descuentos (patron Strategy)
+    interface IDescuento {
+        +calcularDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class DescuentoEfectivo {
+        -porcentaje: number
+        +calcularDescuento(total: number, medioPago: IMedioPago): number
+    }
+
+    class DescuentoDiaEspecial {
+        -diaSemana: DiaSemana
+        -porcentaje: number
+        +calcularDescuento(total: number): number
+    }
+
+    enum DiaSemana {
+        DOMINGO
+        LUNES
+        MARTES
+        MIERCOLES
+        JUEVES
+        VIERNES
+        SABADO
+    }
 }
 
-ErrorComidaNoDisponible -left-|> Error
-ErrorItemNoModificable -left-|> Error
-ErrorItemsInsuficientesParaCombo -left-|> Error
-ErrorItemsNoDisponiblesEnCombo -left-|> Error
-ErrorPrecioFijoComboIncorrecto -left-|> Error
-ErrorPedidoNoConfirmado -left-|> Error
-ErrorPedidoYaConfirmado -left-|> Error
-ErrorPedidoYaListo -left-|> Error
-ErrorPedidoNoFacturable -left-|> Error
-ErrorPedidoYaFacturado -left-|> Error
+IMedioPago <|.. Efectivo
+IMedioPago <|.. TarjetaDebito
+IMedioPago <|.. TarjetaCredito
+IMedioPago <|.. BilleteraVirtual
 
-ErrorComidaNoDisponible -[hidden]down- ErrorItemNoModificable
-ErrorItemNoModificable -[hidden]down- ErrorItemsInsuficientesParaCombo
-ErrorItemsInsuficientesParaCombo -[hidden]down- ErrorItemsNoDisponiblesEnCombo
-ErrorItemsNoDisponiblesEnCombo -[hidden]down- ErrorPrecioFijoComboIncorrecto
-ErrorPrecioFijoComboIncorrecto -[hidden]down- ErrorPedidoNoConfirmado
-ErrorPedidoNoConfirmado -[hidden]down- ErrorPedidoYaConfirmado
-ErrorPedidoYaConfirmado -[hidden]down- ErrorPedidoYaListo
-ErrorPedidoYaListo -[hidden]down- ErrorPedidoNoFacturable
-ErrorPedidoNoFacturable -[hidden]down- ErrorPedidoYaFacturado
+IDescuento <|.. DescuentoEfectivo
+IDescuento <|.. DescuentoDiaEspecial
+DescuentoDiaEspecial --> DiaSemana
+DescuentoEfectivo ..> IMedioPago
+
+Caja o-- "*" IDescuento
+Caja *-- "*" Factura : historial
+Caja ..> IMedioPago
+Factura *-- "*" LineaFactura
+Factura --> "1" IMedioPago
+
+' Relaciones de la caja y la factura con los pedidos
+Caja ..> Pedido
+Factura ..> Pedido : lee al crearse
+Factura ..> ItemPedido : lee al crearse
 
 @enduml
