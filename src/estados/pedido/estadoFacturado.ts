@@ -3,7 +3,10 @@
 import ErrorPedidoYaFacturado from "../../error/errorPedidoYaFacturado";
 import IEstadoPedido from "./iEstadoPedido";
 
-/** Estado final del pedido: ya fue cobrado y forma parte del historial. */
+/**
+ * Estado final del pedido: ya fue cobrado y forma parte del historial.
+ * Cualquier transicion lanza ErrorPedidoYaFacturado.
+ */
 export default class EstadoFacturado implements IEstadoPedido {
     public puedeModificar(): boolean {
         return false;

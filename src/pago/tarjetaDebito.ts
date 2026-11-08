@@ -2,6 +2,7 @@
 
 import IMedioPago from "./iMedioPago";
 
+/** Pago con tarjeta de debito. */
 export default class TarjetaDebito implements IMedioPago {
     public getNombre(): string {
         return "Tarjeta de Debito";

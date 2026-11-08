@@ -7,11 +7,24 @@ import IEstrategiaPrecioCombo from "./iEstrategiaPrecioCombo";
 import ErrorItemsInsuficientesParaCombo from "../error/errorItemsInsuficientesParaCombo";
 import ErrorItemsNoDisponiblesEnCombo from "../error/errorItemsNoDisponiblesEnCombo";
 
+/**
+ * Agrupacion de dos o mas productos que se vende a un precio especial.
+ * El beneficio (descuento porcentual o precio fijo) lo calcula una estrategia (patron Strategy).
+ */
 export default class Combo extends Comida {
     private idCombo:string;
     private productos:Producto[];
     private estrategiaCalculo:IEstrategiaPrecioCombo;
 
+    /**
+     * @param nombre Nombre del combo.
+     * @param disponible Indica si hoy se puede pedir.
+     * @param idCombo Identificador del combo.
+     * @param productos Productos que forman el combo (al menos dos, todos disponibles).
+     * @param estrategiaCalculo Estrategia que calcula el precio con beneficio.
+     * @throws {ErrorItemsInsuficientesParaCombo} Si tiene menos de dos productos.
+     * @throws {ErrorItemsNoDisponiblesEnCombo} Si alguno de los productos no esta disponible.
+     */
     public constructor(
         nombre: string,
         disponible: boolean,
@@ -34,14 +47,24 @@ export default class Combo extends Comida {
             this.estrategiaCalculo=estrategiaCalculo;
         }
 
+    /**
+     * @returns El identificador del combo.
+     */
     public getIdCombo():string {
         return this.idCombo;
     }
 
+    /**
+     * @returns Los productos que forman el combo.
+     */
     public getProductos(): Producto[] {
         return this.productos;
     }
 
+    /**
+     * Suma los precios de los productos y le aplica el beneficio de la estrategia.
+     * @returns El precio del combo con su beneficio.
+     */
     public getPrecio(): number {
         let precioComboSinDescuentos=0;
 
@@ -52,6 +75,10 @@ export default class Combo extends Comida {
         return this.estrategiaCalculo.calcularPrecio(precioComboSinDescuentos);
     }
 
+    /**
+     * @param cantidad Cantidad de combos pedidos.
+     * @returns Un ItemPedidoCombo de este combo.
+     */
     public crearItemPedido(cantidad: number): ItemPedido {
         return new ItemPedidoCombo(this, cantidad);
     }

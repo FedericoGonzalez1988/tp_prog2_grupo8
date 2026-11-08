@@ -5,11 +5,14 @@ import IDescuento from "./iDescuento";
 import IMedioPago from "./iMedioPago";
 import Pedido from "../pedidos/pedido";
 
-/** Cobra los pedidos segun el medio de pago y los descuentos vigentes, y guarda el historial. */
+/** Cobra los pedidos segun el medio de pago y los descuentos vigentes, y guarda el historial de facturas. */
 export default class Caja {
     private descuentos: IDescuento[];
     private historial: Factura[];
 
+    /**
+     * @param descuentos Descuentos que ofrece el restaurante (ninguno por defecto).
+     */
     public constructor(descuentos: IDescuento[] = []) {
         this.descuentos = descuentos;
         this.historial = [];
@@ -19,6 +22,9 @@ export default class Caja {
      * Total a cobrar: el total del pedido menos el descuento mas beneficioso.
      * El descuento se calcula sobre el subtotal (productos), asi los cargos extra
      * como el costo de envio nunca reciben descuento.
+     * @param pedido Pedido a cobrar.
+     * @param medioPago Medio con el que paga el cliente.
+     * @returns El importe a cobrar.
      */
     public calcularTotalACobrar(pedido: Pedido, medioPago: IMedioPago): number {
         return pedido.calcularTotal() - this.calcularDescuento(pedido, medioPago);
@@ -26,7 +32,10 @@ export default class Caja {
 
     /**
      * Cobra el pedido: genera la factura, pasa el pedido a facturado y lo agrega al historial.
-     * Lanza ErrorPedidoNoFacturable si el pedido no esta listo o alguno de sus items no lo esta.
+     * @param pedido Pedido a cobrar; debe estar listo y con todos sus items listos.
+     * @param medioPago Medio con el que paga el cliente.
+     * @returns La factura con el detalle de lo cobrado.
+     * @throws {ErrorPedidoNoFacturable} Si el pedido o alguno de sus items no esta listo.
      */
     public facturar(pedido: Pedido, medioPago: IMedioPago): Factura {
         if (!pedido.puedeFacturarse()) {
@@ -38,16 +47,23 @@ export default class Caja {
         return factura;
     }
 
-    /** Facturas de los pedidos finalizados, en el orden en que se cobraron. */
+    /**
+     * @returns Copia de las facturas de los pedidos finalizados, en el orden en que se cobraron.
+     */
     public getHistorial(): Factura[] {
         return [...this.historial];
     }
 
+    /**
+     * @returns El mejor descuento sobre el subtotal del pedido.
+     */
     private calcularDescuento(pedido: Pedido, medioPago: IMedioPago): number {
         return this.calcularMejorDescuento(pedido.calcularSubtotal(), medioPago);
     }
 
-    /** El mayor de los descuentos que aplican (nunca se combinan), o 0 si no aplica ninguno. */
+    /**
+     * @returns El mayor de los descuentos que aplican (nunca se combinan), o 0 si no aplica ninguno.
+     */
     private calcularMejorDescuento(total: number, medioPago: IMedioPago): number {
         const montos = this.descuentos.map(descuento => descuento.calcularDescuento(total, medioPago));
         return Math.max(NRO_CERO, ...montos);

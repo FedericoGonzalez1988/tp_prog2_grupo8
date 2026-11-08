@@ -33,8 +33,21 @@ npm i
 | `npm run lint-fix` | Revisa el código y corrige automáticamente lo que se pueda |
 | `npm run build` | Limpia `dist/`, ejecuta el lint y compila TypeScript a `dist/` |
 | `npm test` | Ejecuta el build y luego todas las pruebas unitarias con Jest, con reporte de cobertura |
+| `npm run docs` | Genera la documentación del código a partir de los comentarios JSDoc |
 
 El reporte de cobertura queda en `coverage/`. Para verlo en detalle, abrir `coverage/lcov-report/index.html` en el navegador. El enunciado exige superar el 80 %.
+
+## Documentación del código
+
+Todas las clases, interfaces y métodos públicos están documentados con comentarios JSDoc (`/** ... */`), con su descripción, parámetros (`@param`), valor de retorno (`@returns`) y errores que pueden lanzar (`@throws`).
+
+La documentación navegable se genera con [TypeDoc](https://typedoc.org/), que lee esos comentarios JSDoc desde el código TypeScript:
+
+```bash
+npm run docs
+```
+
+El resultado queda en `docs/`. Para verlo, abrir `docs/index.html` en el navegador. La carpeta no se sube al repositorio porque se regenera con el comando.
 
 ## Estructura del proyecto
 

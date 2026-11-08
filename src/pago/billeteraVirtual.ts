@@ -2,6 +2,7 @@
 
 import IMedioPago from "./iMedioPago";
 
+/** Pago con billetera virtual. */
 export default class BilleteraVirtual implements IMedioPago {
     public getNombre(): string {
         return "Billetera Virtual";

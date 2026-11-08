@@ -5,6 +5,7 @@ import ErrorItemNoModificable from "../../error/errorItemNoModificable";
 import EstadoItemListo from "./estadoItemListo";
 import IEstadoItem from "./iEstadoItem"
 
+/** Item en preparacion: ya no se puede modificar ni cancelar. */
 export default class EstadoItemEnPreparacion implements IEstadoItem {
     public siguienteEstado(): IEstadoItem {
         return new EstadoItemListo();

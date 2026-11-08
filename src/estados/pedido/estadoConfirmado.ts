@@ -5,7 +5,12 @@ import ErrorPedidoYaConfirmado from "../../error/errorPedidoYaConfirmado";
 import EstadoListo from "./estadoListo";
 import IEstadoPedido from "./iEstadoPedido";
 
-export default class EstadoConfirmado implements IEstadoPedido {public puedeModificar(): boolean {
+/**
+ * Pedido confirmado y enviado a cocina: ya no admite correcciones.
+ * Solo puede pasar a listo; confirmarlo de nuevo o facturarlo lanza error.
+ */
+export default class EstadoConfirmado implements IEstadoPedido {
+    public puedeModificar(): boolean {
         return false;
     }
 

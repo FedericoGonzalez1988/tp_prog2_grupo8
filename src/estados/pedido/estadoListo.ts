@@ -4,6 +4,10 @@ import ErrorPedidoYaListo from "../../error/errorPedidoYaListo";
 import EstadoFacturado from "./estadoFacturado";
 import IEstadoPedido from "./iEstadoPedido";
 
+/**
+ * Pedido listo: es el unico estado que permite facturar.
+ * Solo puede pasar a facturado; confirmarlo o marcarlo listo de nuevo lanza error.
+ */
 export default class EstadoListo implements IEstadoPedido {
     public puedeModificar(): boolean {
         return false;

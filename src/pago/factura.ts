@@ -16,6 +16,11 @@ export default class Factura {
     private cargosExtra: number;
     private descuento: number;
 
+    /**
+     * @param pedido Pedido cobrado.
+     * @param medioPago Medio con el que pago el cliente.
+     * @param descuento Monto descontado.
+     */
     public constructor(pedido: Pedido, medioPago: IMedioPago, descuento: number) {
         this.numeroPedido = pedido.getNumeroPedido();
         this.fecha = new Date();
@@ -27,37 +32,58 @@ export default class Factura {
         this.descuento = descuento;
     }
 
+    /**
+     * @returns El identificador del pedido cobrado.
+     */
     public getNumeroPedido(): string {
         return this.numeroPedido;
     }
 
+    /**
+     * @returns Copia de la fecha y hora del cobro.
+     */
     public getFecha(): Date {
         return new Date(this.fecha);
     }
 
+    /**
+     * @returns El medio con el que se pago.
+     */
     public getMedioPago(): IMedioPago {
         return this.medioPago;
     }
 
+    /**
+     * @returns Copia de las lineas de la factura, una por item.
+     */
     public getLineas(): LineaFactura[] {
         return [...this.lineas];
     }
 
-    /** Suma de los items (base sobre la que se calcula el descuento). */
+    /**
+     * @returns La suma de los items (base sobre la que se calcula el descuento).
+     */
     public getSubtotal(): number {
         return this.subtotal;
     }
 
-    /** Cargos que no reciben descuento, como el costo de envio. 0 si no hay. */
+    /**
+     * @returns Los cargos que no reciben descuento, como el costo de envio (0 si no hay).
+     */
     public getCargosExtra(): number {
         return this.cargosExtra;
     }
 
+    /**
+     * @returns El monto descontado.
+     */
     public getDescuento(): number {
         return this.descuento;
     }
 
-    /** Lo que se le cobro al cliente: subtotal + cargos extra - descuento. */
+    /**
+     * @returns Lo que se le cobro al cliente: subtotal + cargos extra - descuento.
+     */
     public getTotal(): number {
         return this.subtotal + this.cargosExtra - this.descuento;
     }
