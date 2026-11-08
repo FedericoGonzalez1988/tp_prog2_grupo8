@@ -1,9 +1,9 @@
 import { mock, MockProxy } from "jest-mock-extended";
 import Empleado from "../src/empleado";
-import Comida from "../src/comida";
-import Pedido from "../src/pedido";
-import ItemPedido from "../src/itemPedido";
-import IPedidoModificable from "../src/IPedidoModificable";
+import Comida from "../src/menu/comida";
+import Pedido from "../src/pedidos/pedido";
+import ItemPedido from "../src/pedidos/itemPedido";
+import IPedidoModificable from "../src/pedidos/IPedidoModificable";
 
 describe("Empleado", () => {
   let empleado: Empleado;
