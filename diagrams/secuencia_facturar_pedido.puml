@@ -1,0 +1,99 @@
+@startuml Secuencia Facturar Pedido
+
+title Facturar un pedido y guardarlo en el historial (Req. 7, 8, 9 y 10)\nEjemplo: pedido listo, pago en efectivo, la Caja tiene DescuentoEfectivo y DescuentoDiaEspecial
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor Cajero
+participant "caja\n:Caja" as caja
+participant "pedido\n:Pedido" as pedido
+participant "estado\n:EstadoListo" as estado
+participant "item\n:ItemPedido" as item
+participant "descEfectivo\n:DescuentoEfectivo" as descEfe
+participant "descMartes\n:DescuentoDiaEspecial" as descDia
+participant "medio\n:Efectivo" as medio
+
+Cajero -> caja : facturar(pedido, medio)
+activate caja
+
+== 1. Validar que se pueda facturar (Req. 7) ==
+
+caja -> pedido : puedeFacturarse()
+activate pedido
+pedido -> estado : puedeFacturarse()
+estado --> pedido : true
+loop por cada item del pedido
+    pedido -> item : estaListo()
+    item --> pedido : true
+end
+pedido --> caja : true
+deactivate pedido
+
+alt el pedido no esta listo o algun item no lo esta
+    caja --> Cajero : lanza ErrorPedidoNoFacturable
+end
+
+== 2. Calcular el mejor descuento (Req. 8 y 9) ==
+
+caja -> pedido : calcularSubtotal()
+activate pedido
+loop por cada item
+    pedido -> item : getSubtotal()
+    item --> pedido : importe
+end
+pedido --> caja : subtotal
+deactivate pedido
+note right of caja : el descuento se calcula sobre el subtotal:\nel costo de envio nunca recibe descuento
+
+caja -> descEfe : calcularDescuento(subtotal, medio)
+activate descEfe
+descEfe -> medio : esEfectivo()
+medio --> descEfe : true
+descEfe --> caja : subtotal * 10%
+deactivate descEfe
+
+caja -> descDia : calcularDescuento(subtotal)
+activate descDia
+note right of descDia : new Date().getDay() === MARTES ?
+descDia --> caja : 0 (hoy no es martes)
+deactivate descDia
+
+note right of caja : descuento = el MAYOR de los montos\n(nunca se combinan)
+
+== 3. Generar la factura ==
+
+create participant "factura\n:Factura" as factura
+caja -> factura : new Factura(pedido, medio, descuento)
+activate factura
+factura -> pedido : getNumeroPedido()
+factura -> pedido : getItems()
+loop por cada item
+    factura -> item : getDescripcion(), getCantidad(), getSubtotal()
+    create participant "linea\n:LineaFactura" as linea
+    factura -> linea : new LineaFactura(descripcion, cantidad, importe)
+end
+factura -> pedido : calcularSubtotal()
+factura -> pedido : calcularTotal()
+note right of factura : cargosExtra = total - subtotal\n(el envio en delivery, 0 en el resto)\nfecha = new Date()
+factura --> caja
+deactivate factura
+
+== 4. Finalizar el pedido y guardarlo en el historial (Req. 10) ==
+
+caja -> pedido : marcarFacturado()
+activate pedido
+pedido -> estado : marcarFacturado()
+create participant "nuevoEstado\n:EstadoFacturado" as facturado
+estado -> facturado : new
+estado --> pedido : nuevoEstado
+deactivate pedido
+note right of pedido : ya no puede volver a facturarse
+
+caja -> caja : historial.push(factura)
+
+caja --> Cajero : factura
+deactivate caja
+
+@enduml
