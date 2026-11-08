@@ -38,13 +38,24 @@ El reporte de cobertura queda en `coverage/`. Para verlo en detalle, abrir `cove
 
 ## Estructura del proyecto
 
+El código está organizado en módulos, uno por carpeta, que coinciden con los paquetes del diagrama de clases. Cada archivo tiene una sola clase.
+
 ```
-📂 src/            código fuente (una clase por archivo)
-   📂 constants/   constantes numéricas (evitan números mágicos)
-   📂 error/       errores propios del dominio
-📂 tests/          pruebas unitarias (*.test.ts)
-📂 diagrams/       diagramas UML en PlantUML
-📄 Enunciado.pdf   enunciado del trabajo práctico
+📂 src/
+   📂 menu/             catálogo: Comida, Producto, Combo, Menu y estrategias de precio de combo
+   📂 pedidos/          Pedido y sus modalidades, ItemPedido (simple y combo), modificaciones
+   📂 estados/
+      📂 pedido/        en construcción, confirmado, listo, facturado
+      📂 item/          pendiente, en preparación, listo
+   📂 cocina/           Estacion y sus tipos, Cola y MyNode
+   📂 pago/             Caja, Factura, medios de pago y descuentos
+   📂 constants/        constantes numéricas (evitan números mágicos)
+   📂 error/            errores propios del dominio
+   📄 empleado.ts
+   📄 index.ts
+📂 tests/               pruebas unitarias (*.test.ts), con las mismas carpetas que src/
+📂 diagrams/            diagramas UML en PlantUML
+📄 Enunciado.pdf        enunciado del trabajo práctico
 ```
 
 ## Diseño
