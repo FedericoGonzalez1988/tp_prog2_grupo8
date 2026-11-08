@@ -1,3 +1,4 @@
+import EstadoFacturado from "../src/estadoFacturado";
 import EstadoListo from "../src/estadoListo";
 import ErrorPedidoYaListo from "../src/error/errorPedidoYaListo";
 
@@ -35,6 +36,13 @@ describe("EstadoListo", () => {
             expect(() => {
                 estado.marcarListo();
             }).toThrow(ErrorPedidoYaListo);
+        });
+    });
+
+    describe("marcarFacturado", () => {
+        it("debe transicionar retornando una instancia de EstadoFacturado", () => {
+            const nuevoEstado = estado.marcarFacturado();
+            expect(nuevoEstado).toBeInstanceOf(EstadoFacturado);
         });
     });
 });

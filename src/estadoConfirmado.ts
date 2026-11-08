@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/class-methods-use-this */
 
+import ErrorPedidoNoFacturable from "./error/errorPedidoNoFacturable";
 import ErrorPedidoYaConfirmado from "./error/errorPedidoYaConfirmado";
 import EstadoListo from "./estadoListo";
 import IEstadoPedido from "./iEstadoPedido";
@@ -18,4 +19,8 @@ export default class EstadoConfirmado implements IEstadoPedido {public puedeModi
 
     public marcarListo(): IEstadoPedido {
         return new EstadoListo();
+    }
+
+    public marcarFacturado(): IEstadoPedido {
+        throw new ErrorPedidoNoFacturable("No se puede facturar un pedido que todavía no está listo.");
     }}

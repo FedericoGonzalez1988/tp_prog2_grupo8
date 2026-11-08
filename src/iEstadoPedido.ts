@@ -3,4 +3,5 @@ export default interface IEstadoPedido {
     puedeFacturarse(): boolean;
     confirmar(): IEstadoPedido;
     marcarListo(): IEstadoPedido;
+    marcarFacturado(): IEstadoPedido;
 }

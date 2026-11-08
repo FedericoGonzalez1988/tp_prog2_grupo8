@@ -20,6 +20,10 @@ export default class ItemPedidoCombo extends ItemPedido {
         return this.combo;
     }
 
+    public getDescripcion(): string {
+        return this.combo.getNombre();
+    }
+
     public getComponentes(): ItemPedidoSimple[] {
         return this.componentes;
     }

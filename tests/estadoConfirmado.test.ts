@@ -1,3 +1,4 @@
+import ErrorPedidoNoFacturable from "../src/error/errorPedidoNoFacturable";
 import EstadoConfirmado from "../src/estadoConfirmado";
 import EstadoListo from "../src/estadoListo";
 import ErrorPedidoYaConfirmado from "../src/error/errorPedidoYaConfirmado";
@@ -35,6 +36,14 @@ describe("EstadoConfirmado", () => {
         it("debe transicionar retornando una instancia de EstadoListo", () => {
             const nuevoEstado = estado.marcarListo();
             expect(nuevoEstado).toBeInstanceOf(EstadoListo);
+        });
+    });
+
+    describe("marcarFacturado", () => {
+        it("debe lanzar ErrorPedidoNoFacturable porque el pedido todavía no está listo", () => {
+            expect(() => {
+                estado.marcarFacturado();
+            }).toThrow(ErrorPedidoNoFacturable);
         });
     });
 });

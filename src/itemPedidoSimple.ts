@@ -21,6 +21,10 @@ export default class ItemPedidoSimple extends ItemPedido {
         return this.producto;
     }
 
+    public getDescripcion(): string {
+        return this.producto.getNombre();
+    }
+
     public getNombreEstado(): string {
         return this.estado.getNombre();
     }
