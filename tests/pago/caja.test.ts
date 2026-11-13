@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-lines-per-function */
+
 import { mock, MockProxy } from "jest-mock-extended";
 import Caja from "../../src/pago/caja";
 import Pedido from "../../src/pedidos/pedido";
@@ -15,8 +18,8 @@ import DescuentoDiaEspecial from "../../src/pago/descuentoDiaEspecial";
 import DiaSemana from "../../src/pago/diaSemana";
 import ErrorPedidoNoFacturable from "../../src/error/errorPedidoNoFacturable";
 
-const UN_MARTES = new Date(2026, 10, 10);
-const UN_MIERCOLES = new Date(2026, 10, 11);
+const unMartes = new Date(2026, 10, 10);
+const unMiercoles = new Date(2026, 10, 11);
 
 describe("Caja (con dobles de prueba)", () => {
   let pedido: MockProxy<Pedido>;
@@ -73,28 +76,28 @@ describe("Caja (escenarios completos)", () => {
   });
 
   it("un miercoles en efectivo aplica el descuento por efectivo", () => {
-    jest.useFakeTimers().setSystemTime(UN_MIERCOLES);
+    jest.useFakeTimers().setSystemTime(unMiercoles);
     const pedido = new PedidoSalon("P-1", [milanesa, milanesa], "Mesa 2", mock<Empleado>());
 
     expect(caja.calcularTotalACobrar(pedido, new Efectivo())).toBe(9000);
   });
 
   it("un miercoles con tarjeta no aplica ningun descuento", () => {
-    jest.useFakeTimers().setSystemTime(UN_MIERCOLES);
+    jest.useFakeTimers().setSystemTime(unMiercoles);
     const pedido = new PedidoSalon("P-1", [milanesa, milanesa], "Mesa 2", mock<Empleado>());
 
     expect(caja.calcularTotalACobrar(pedido, new TarjetaDebito())).toBe(10000);
   });
 
   it("un martes en efectivo aplica solo el mayor (15% del dia especial, no 10% + 15%)", () => {
-    jest.useFakeTimers().setSystemTime(UN_MARTES);
+    jest.useFakeTimers().setSystemTime(unMartes);
     const pedido = new PedidoSalon("P-1", [milanesa, milanesa], "Mesa 2", mock<Empleado>());
 
     expect(caja.calcularTotalACobrar(pedido, new Efectivo())).toBe(8500);
   });
 
   it("en un delivery el costo de envio nunca recibe descuento", () => {
-    jest.useFakeTimers().setSystemTime(UN_MIERCOLES);
+    jest.useFakeTimers().setSystemTime(unMiercoles);
     const pedido = new PedidoDelivery("P-2", [milanesa, milanesa], mock<Empleado>(), "Calle 123", 1500);
 
     // 10% de 10000 (solo productos) = 1000 -> (10000 + 1500) - 1000
@@ -111,7 +114,7 @@ describe("Caja - facturacion e historial", () => {
     parrilla = new Parrilla();
     milanesa = new Producto("Milanesa", true, 5000, parrilla);
     caja = new Caja([new DescuentoEfectivo(10)]);
-    jest.useFakeTimers().setSystemTime(UN_MIERCOLES);
+    jest.useFakeTimers().setSystemTime(unMiercoles);
   });
 
   afterEach(() => {

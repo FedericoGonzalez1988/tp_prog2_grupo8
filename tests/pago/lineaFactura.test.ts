@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+
 import LineaFactura from "../../src/pago/lineaFactura";
 
 describe("LineaFactura", () => {
