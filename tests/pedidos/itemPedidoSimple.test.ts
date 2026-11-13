@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-lines-per-function */
+
 import { mock, MockProxy } from "jest-mock-extended";
 import ItemPedidoSimple from "../../src/pedidos/itemPedidoSimple";
 import Producto from "../../src/menu/producto";

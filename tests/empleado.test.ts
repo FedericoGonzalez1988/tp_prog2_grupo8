@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+
 import { mock, MockProxy } from "jest-mock-extended";
 import Empleado from "../src/empleado";
 import Comida from "../src/menu/comida";
