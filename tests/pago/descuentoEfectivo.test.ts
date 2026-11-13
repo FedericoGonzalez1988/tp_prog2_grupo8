@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+
 import DescuentoEfectivo from "../../src/pago/descuentoEfectivo";
 import Efectivo from "../../src/pago/efectivo";
 import TarjetaCredito from "../../src/pago/tarjetaCredito";
