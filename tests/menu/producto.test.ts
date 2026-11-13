@@ -1,4 +1,5 @@
-
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-lines-per-function */
 import Producto from "../../src/menu/producto";
 import Estacion from "../../src/cocina/estacion";
 import ItemPedidoSimple from "../../src/pedidos/itemPedidoSimple";
