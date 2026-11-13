@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-lines-per-function */
+
+
 import { mock } from "jest-mock-extended";
 import Factura from "../../src/pago/factura";
 import PedidoSalon from "../../src/pedidos/pedidoSalon";
@@ -10,7 +14,7 @@ import Barra from "../../src/cocina/barra";
 import EstrategiaComboPorcentaje from "../../src/menu/estrategiaComboPorcentaje";
 import Efectivo from "../../src/pago/efectivo";
 
-const FECHA_COBRO = new Date(2026, 10, 10, 21, 30);
+const fechaDeCobro = new Date(2026, 10, 10, 21, 30);
 
 describe("Factura", () => {
   let milanesa: Producto;
@@ -23,7 +27,7 @@ describe("Factura", () => {
     const hamburguesa = new Producto("Hamburguesa", true, 5000, parrilla);
     const gaseosa = new Producto("Gaseosa", true, 1000, new Barra());
     comboBurger = new Combo("Combo Burger", true, "C1", [hamburguesa, gaseosa], new EstrategiaComboPorcentaje(10));
-    jest.useFakeTimers().setSystemTime(FECHA_COBRO);
+    jest.useFakeTimers().setSystemTime(fechaDeCobro);
   });
 
   afterEach(() => {
@@ -36,7 +40,7 @@ describe("Factura", () => {
     const factura = new Factura(pedido, efectivo, 0);
 
     expect(factura.getNumeroPedido()).toBe("P-1");
-    expect(factura.getFecha()).toEqual(FECHA_COBRO);
+    expect(factura.getFecha()).toEqual(fechaDeCobro);
     expect(factura.getMedioPago()).toBe(efectivo);
   });
 
@@ -94,6 +98,6 @@ describe("Factura", () => {
     factura.getFecha().setFullYear(2000);
 
     expect(factura.getLineas()).toHaveLength(1);
-    expect(factura.getFecha()).toEqual(FECHA_COBRO);
+    expect(factura.getFecha()).toEqual(fechaDeCobro);
   });
 });
