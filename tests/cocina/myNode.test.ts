@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import MyNode from "../../src/cocina/myNode";
 
 describe("MyNode", () => {
