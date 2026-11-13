@@ -1,6 +1,6 @@
 
 function main():void {
-  console.log("Hola mundo!");
+  console.log("Gestión de Pedido - Fogón del barrio");
 } 
 
 main();
